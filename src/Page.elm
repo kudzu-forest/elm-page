@@ -153,7 +153,7 @@ And the main app looks like this:
             , view = view
             }
 
-For usage with multiple pages, see [the GitHub repository]().
+For usage with multiple pages, see [the GitHub repository](https://github.com/kudzu-forest/elm-page).
 
 
 # Types
