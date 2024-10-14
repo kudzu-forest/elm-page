@@ -3,7 +3,7 @@
     "name": "kudzu-forest/elm-page",
     "summary": "Typeless pages gathering together to constitute SPA.",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exposed-modules": [
         "Page"
     ],
