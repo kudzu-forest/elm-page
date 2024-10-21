@@ -1,4 +1,4 @@
-module Main exposing (..)
+module ManyPages exposing (..)
 
 import Browser
 import Html as H exposing (Html)
@@ -23,38 +23,22 @@ import Pages.WebSocket
    - gather .elm files from 'An Introduction to Elm' (`Ctrl-a` and `Ctrl-v`),
    - put them in `./Pages` and rename the module,
    - substitute `Page` for `Browser`,
-   - substitute `page` for `main`,
+   - substitute `initiate` for `main`,
    - and write codes here!
 
 -}
 
 
-pages : List ( String, ( Page, Cmd Page.Msg ) )
+pages : List ( String, Page.Msg )
 pages =
-    [ ( "counter"
-      , ( Pages.Buttons.page, Cmd.none )
-      )
-    , ( "reversing text"
-      , ( Pages.TextFields.page, Cmd.none )
-      )
-    , ( "form control"
-      , ( Pages.Forms.page, Cmd.none )
-      )
-    , ( "Book through Http"
-      , Pages.Book.page ()
-      )
-    , ( "Quotes through Json"
-      , Pages.Quotes.page ()
-      )
-    , ( "Random dice"
-      , Pages.Numbers.page ()
-      )
-    , ( "What time is it now?"
-      , Pages.Time.page ()
-      )
-    , ( "Web socket"
-      , Pages.WebSocket.page ()
-      )
+    [ ( "counter" , Pages.Buttons.initiate)
+    , ( "reversing text" , Pages.TextFields.initiate)
+    , ( "form control" , Pages.Forms.initiate)
+    , ( "Book through Http" , Pages.Book.initiate ()) -- The () is a flag.
+    , ( "Quotes through Json" , Pages.Quotes.initiate ())
+    , ( "Random dice" , Pages.Numbers.initiate ())
+    , ( "What time is it now?" , Pages.Time.initiate ())
+    , ( "Web socket" , Pages.WebSocket.initiate ())
     ]
 
 
@@ -64,18 +48,12 @@ type alias Model =
 
 
 type Msg
-    = PageInitialized ( Page, Cmd Page.Msg )
-    | PageUpdated Page.Msg
+    = PageUpdated Page.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        PageInitialized ( p, pcmd ) ->
-            ( { model | page = p }
-            , Cmd.map PageUpdated pcmd
-            )
-
         PageUpdated pmsg ->
             let
                 ( p, pcmd ) =
@@ -113,16 +91,17 @@ view model =
         ]
 
 
-toButton : ( String, ( Page, Cmd Page.Msg ) ) -> Html Msg
-toButton ( name, pair ) =
+toButton : ( String, Page.Msg ) -> Html Msg
+toButton ( name, pageMsg ) =
     H.button
-        [ HE.onClick (PageInitialized pair) ]
+        [ HE.onClick (PageUpdated pageMsg) ]
         [ H.text name ]
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { page = Pages.Buttons.page }, Cmd.none )
+    update (PageUpdated Pages.Buttons.initiate) 
+        {page = Page.empty}
 
 
 subscriptions : Model -> Sub Msg

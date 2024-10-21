@@ -3,6 +3,7 @@ module Page exposing
     , unwrapMsg
     , sandbox, element
     , mapView, subscribe
+    , empty
     )
 
 {-| This module allows you to combine multiple apps created with `Browser.element` into a single application, with or without URL control. The key feature of the `Page` type is that, unlike other attempts to simplify SPA development, it does not use type variables (it's `Page`, not `Page model msg`). This allows you to combine all the pages into a single `List Page`, `Dict String Page`, `Random.Generator Page`, or any other data structure.
@@ -26,7 +27,7 @@ Users need to write a bit of boilerplate. For example, if you want to use the di
 
 
     -- MAIN
-    page =
+    initialize =
         Page.element
             -- -main = Browser.element
             { init = init
@@ -106,7 +107,7 @@ And the main app looks like this:
     init _ =
         let
             ( initialPage, initialCmd ) =
-                Pages.Clock.page ()
+                Page.unwrapMsg <| Pages.Clock.initiate ()
         in
         ( Model initialPage
         , Cmd.map PageUpdated initialCmd
@@ -175,6 +176,11 @@ For usage with multiple pages, see [the GitHub repository](https://github.com/ku
 
 @docs mapView, subscribe
 
+
+# Instance
+
+@docs empty
+
 -}
 
 import Html exposing (Html)
@@ -192,7 +198,7 @@ type Msg
     = Updated (() -> ( Page, Cmd Msg ))
 
 
-{-| Similar to `Browser.element`. At initialization, you can pass a value of any type as flags. You need to prepare a receiver message in the parent module like the example above.
+{-| Similar to `Browser.element`. At initialization, you can pass a value of any type as flags. The resultant `(Page, Cmd Msg)` will be returned being wrapped with `Page.Msg`, so you need to prepare a receiver message in the parent module like the example above.
 -}
 element :
     { init : flag -> ( model, Cmd msg )
@@ -201,7 +207,7 @@ element :
     , view : model -> Html msg
     }
     -> flag
-    -> ( Page, Cmd Msg )
+    -> Msg
 element { init, subscriptions, update, view } flag =
     let
         ( initialModel, initialCmd ) =
@@ -225,15 +231,17 @@ element { init, subscriptions, update, view } flag =
                     )
                 )
     in
-    ( elementInner
-        { model = initialModel
-        , subscriptions = subscriptions
-        , update = update
-        , view = view
-        , mapper = mapper
-        }
-    , Cmd.map (mapper initialModel) initialCmd
-    )
+    Updated <|
+        \() ->
+            ( elementInner
+                { model = initialModel
+                , subscriptions = subscriptions
+                , update = update
+                , view = view
+                , mapper = mapper
+                }
+            , Cmd.map (mapper initialModel) initialCmd
+            )
 
 
 elementInner :
@@ -262,19 +270,15 @@ sandbox :
     , update : msg -> model -> model
     , view : model -> Html msg
     }
-    -> Page
+    -> Msg
 sandbox { init, update, view } =
-    let
-        ( initialPage, _ ) =
-            element
-                { init = \() -> ( init, Cmd.none )
-                , subscriptions = \_ -> Sub.none
-                , update = \msg model -> ( update msg model, Cmd.none )
-                , view = view
-                }
-                ()
-    in
-    initialPage
+    element
+        { init = \() -> ( init, Cmd.none )
+        , subscriptions = \_ -> Sub.none
+        , update = \msg model -> ( update msg model, Cmd.none )
+        , view = view
+        }
+        ()
 
 
 {-| Don't forget to use this in your `subscriptions` in the parent module!
@@ -299,3 +303,16 @@ mapView mapper (Page ( innerView, _ )) =
 unwrapMsg : Msg -> ( Page, Cmd Msg )
 unwrapMsg (Updated lazyPair) =
     lazyPair ()
+
+
+{-| An empty page. useful for initialization.
+-}
+empty : Page
+empty =
+    sandbox
+        { init = ()
+        , update = \_ _ -> ()
+        , view = \_ -> Html.text ""
+        }
+        |> unwrapMsg
+        |> Tuple.first

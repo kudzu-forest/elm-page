@@ -27,42 +27,26 @@ import Url.Parser exposing ((</>))
    - gather .elm files from 'An Introduction to Elm'.(`Ctrl-a` and `Ctrl-v`)
    - put them in `./Pages` and rename the module.
    - substitute `Page` for `Browser`.
-   - substitute `page` for `main`.
+   - substitute `initiate` for `main`.
    - and wrote codes here!
 
 -}
 
 
-pages : List ( String, ( Page, Cmd Page.Msg ) )
+pages : List ( String, Page.Msg )
 pages =
-    [ ( "counter"
-      , ( Pages.Buttons.page, Cmd.none )
-      )
-    , ( "reversing_text"
-      , ( Pages.TextFields.page, Cmd.none )
-      )
-    , ( "form_control"
-      , ( Pages.Forms.page, Cmd.none )
-      )
-    , ( "Book_through_Http"
-      , Pages.Book.page ()
-      )
-    , ( "Quotes_through_Json"
-      , Pages.Quotes.page ()
-      )
-    , ( "Random_dice"
-      , Pages.Numbers.page ()
-      )
-    , ( "What_time_is_it_now"
-      , Pages.Time.page ()
-      )
-    , ( "Web_socket"
-      , Pages.WebSocket.page ()
-      )
+    [ ( "counter" ,  Pages.Buttons.initiate )
+    , ( "reversing_text" , Pages.TextFields.initiate)
+    , ( "form_control" , Pages.Forms.initiate)
+    , ( "Book_through_Http" , Pages.Book.initiate ())
+    , ( "Quotes_through_Json" , Pages.Quotes.initiate ())
+    , ( "Random_dice" , Pages.Numbers.initiate ())
+    , ( "What_time_is_it_now" , Pages.Time.initiate ())
+    , ( "Web_socket" , Pages.WebSocket.initiate ())
     ]
 
 
-pageDict : Dict String ( Page, Cmd Page.Msg )
+pageDict : Dict String Page.Msg
 pageDict =
     Dict.fromList pages
 
@@ -77,7 +61,6 @@ type alias Model =
 type Msg
     = UrlChanged Url
     | LinkClicked Browser.UrlRequest
-    | PageInitialized ( Page, Cmd Page.Msg )
     | PageUpdated Page.Msg
 
 
@@ -99,19 +82,14 @@ update msg model =
 
         UrlChanged url ->
             let
-                newPagePair =
+                newPageMsg =
                     Url.Parser.parse urlParser url
                         |> Maybe.andThen
                             (\pageName -> Dict.get pageName pageDict)
                         |> Maybe.withDefault
-                            ( model.page, Cmd.none )
+                            Pages.Buttons.initiate
             in
-            update (PageInitialized newPagePair) model
-
-        PageInitialized ( p, pcmd ) ->
-            ( { model | page = p }
-            , Cmd.map PageUpdated pcmd
-            )
+            update (PageUpdated newPageMsg) model
 
         PageUpdated pmsg ->
             let
@@ -158,17 +136,14 @@ init _ url key =
     let
         title =
             Url.Parser.parse urlParser url
-                |> Maybe.withDefault "counter"
+                |> Maybe.withDefault "page not found"
     in
-    ( { page =
-            Dict.get title pageDict
-                |> Maybe.map Tuple.first
-                |> Maybe.withDefault Pages.Buttons.page
-      , key = key
-      , title = title
-      }
-    , Cmd.none
-    )
+    update (PageUpdated Pages.Buttons.initiate)
+    { page = Page.empty
+    , key = key
+    , title = title
+    }
+    
 
 
 subscriptions : Model -> Sub Msg

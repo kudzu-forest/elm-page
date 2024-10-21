@@ -15,7 +15,7 @@ import Page
 -- MAIN
 
 
-page =
+initiate =
     Page.element
         { init = init
         , update = update

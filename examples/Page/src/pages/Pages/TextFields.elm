@@ -16,7 +16,7 @@ import Html.Events exposing (onInput)
 -- MAIN
 
 
-page =
+initiate =
     Page.sandbox { init = init, update = update, view = view }
 
 

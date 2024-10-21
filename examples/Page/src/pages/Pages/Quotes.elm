@@ -18,7 +18,7 @@ import Json.Decode exposing (Decoder, field, int, map4, string)
 -- MAIN
 
 
-page =
+initiate =
     Page.element
         { init = init
         , update = update

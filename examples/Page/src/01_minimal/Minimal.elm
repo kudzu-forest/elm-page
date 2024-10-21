@@ -1,4 +1,4 @@
-module Minimum exposing (..)
+module Minimal exposing (..)
 
 import Browser
 import Html as H exposing (Html)
@@ -31,14 +31,15 @@ update msg model =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = \_ -> ( Model page, Cmd.none )
+        { init =
+            \_ -> update (PageUpdated page) (Model Page.empty)
         , subscriptions = \_ -> Sub.none
         , update = update
         , view = view
         }
 
 
-page : Page
+page : Page.Msg
 page =
     Page.sandbox
         { init = 0

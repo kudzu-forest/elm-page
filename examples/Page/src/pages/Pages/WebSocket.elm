@@ -11,8 +11,8 @@ import Page exposing (Page)
 -- MAIN
 
 
-page : () -> ( Page, Cmd Page.Msg )
-page =
+initiate : () -> Page.Msg
+initiate =
     Page.element
         { init = init
         , view = view
