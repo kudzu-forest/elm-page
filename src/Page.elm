@@ -1,9 +1,8 @@
 module Page exposing
     ( Page, Msg
     , unwrapMsg
-    , sandbox, element
+    , empty, sandbox, element
     , mapView, subscribe
-    , empty
     )
 
 {-| This module allows you to combine multiple apps created with `Browser.element` into a single application, with or without URL control. The key feature of the `Page` type is that, unlike other attempts to simplify SPA development, it does not use type variables (it's `Page`, not `Page model msg`). This allows you to combine all the pages into a single `List Page`, `Dict String Page`, `Random.Generator Page`, or any other data structure.
@@ -27,7 +26,7 @@ Users need to write a bit of boilerplate. For example, if you want to use the di
 
 
     -- MAIN
-    initialize =
+    initiate =
         Page.element
             -- -main = Browser.element
             { init = init
@@ -169,17 +168,12 @@ For usage with multiple pages, see [the GitHub repository](https://github.com/ku
 
 # Creation
 
-@docs sandbox, element
+@docs empty, sandbox, element
 
 
 # Usage
 
 @docs mapView, subscribe
-
-
-# Instance
-
-@docs empty
 
 -}
 
@@ -198,8 +192,7 @@ type Msg
     = Updated (() -> ( Page, Cmd Msg ))
 
 
-{-| Similar to `Browser.element`. At initialization, you can pass a value of any type as flags. The resultant `(Page, Cmd Msg)` will be returned being wrapped with `Page.Msg`, so you need to prepare a receiver message in the parent module like the example above.
--}
+{-| Similar to `Browser.element`. At initialization, you can pass a value of any type as flags. The resulting `(Page, Cmd Page.Msg)` will be returned wrapped in `Page.Msg`, so you need to `unwrap` the `Page.Msg` value like in the example above or call `update` during the initialization phase, as shown in examples in [the GitHub repository](https://github.com/kudzu-forest/elm-page). -}
 element :
     { init : flag -> ( model, Cmd msg )
     , subscriptions : model -> Sub msg
@@ -316,3 +309,6 @@ empty =
         }
         |> unwrapMsg
         |> Tuple.first
+
+
+
