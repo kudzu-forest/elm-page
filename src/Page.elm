@@ -207,43 +207,7 @@ element { init, subscriptions, update, view } flag =
         ( initialModel, initialCmd ) =
             init flag
 
-        mapper msg =
-            let
-                ( newModel, cmd ) =
-                    update msg initialModel
-            in
-            Updated
-                (\() ->
-                    ( elementInner
-                        { model = newModel
-                        , subscriptions = subscriptions
-                        , update = update
-                        , view = view
-                        }
-                    , Cmd.map mapper cmd
-                    )
-                )
-    in
-    ( elementInner
-        { model = initialModel
-        , subscriptions = subscriptions
-        , update = update
-        , view = view
-        }
-    , Cmd.map mapper initialCmd
-    )
-
-
-elementInner :
-    { model : model
-    , subscriptions : model -> Sub msg
-    , update : msg -> model -> ( model, Cmd msg )
-    , view : model -> Html msg
-    }
-    -> Page
-elementInner { model, subscriptions, update, view } =
-    let
-        mapper msg =
+        mapper model msg =
             let
                 ( newModel, cmd ) =
                     update msg model
@@ -255,14 +219,39 @@ elementInner { model, subscriptions, update, view } =
                         , subscriptions = subscriptions
                         , update = update
                         , view = view
+                        , mapper = mapper
                         }
-                    , Cmd.map mapper cmd
+                    , Cmd.map (mapper newModel) cmd
                     )
                 )
     in
+    ( elementInner
+        { model = initialModel
+        , subscriptions = subscriptions
+        , update = update
+        , view = view
+        , mapper = mapper
+        }
+    , Cmd.map (mapper initialModel) initialCmd
+    )
+
+
+elementInner :
+    { model : model
+    , subscriptions : model -> Sub msg
+    , update : msg -> model -> ( model, Cmd msg )
+    , view : model -> Html msg
+    , mapper : model -> msg -> Msg
+    }
+    -> Page
+elementInner { model, subscriptions, update, view, mapper } =
+    let
+        specialMapper =
+            mapper model
+    in
     Page
-        ( Html.map mapper (view model)
-        , Sub.map mapper (subscriptions model)
+        ( Html.map specialMapper (view model)
+        , Sub.map specialMapper (subscriptions model)
         )
 
 
@@ -275,12 +264,17 @@ sandbox :
     }
     -> Page
 sandbox { init, update, view } =
-    elementInner
-        { model = init
-        , subscriptions = \_ -> Sub.none
-        , update = \msg model -> ( update msg model, Cmd.none )
-        , view = view
-        }
+    let
+        ( initialPage, _ ) =
+            element
+                { init = \() -> ( init, Cmd.none )
+                , subscriptions = \_ -> Sub.none
+                , update = \msg model -> ( update msg model, Cmd.none )
+                , view = view
+                }
+                ()
+    in
+    initialPage
 
 
 {-| Don't forget to use this in your `subscriptions` in the parent module!
