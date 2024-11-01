@@ -5193,10 +5193,11 @@ var $harrysarson$elm_hacky_unique$Unique$unique = function (_v0) {
 	return $harrysarson$elm_hacky_unique$Unique$UniqueImpl(0 / 0);
 };
 var $author$project$Page$empty = $author$project$Page$Model(
-	_Utils_Tuple3(
-		$harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0),
-		$elm$html$Html$text(''),
-		$elm$core$Platform$Sub$none));
+	{
+		html: $elm$html$Html$text(''),
+		key: $harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0),
+		sub: $elm$core$Platform$Sub$none
+	});
 var $author$project$Page$mapInit = F3(
 	function (mapper, _v0, flag) {
 		var func = _v0.a;
@@ -5239,16 +5240,17 @@ var $author$project$Page$elementInner = function (_v0) {
 	var mapper = _v0.mapper;
 	var specializedMapper = mapper(model);
 	return $author$project$Page$Model(
-		_Utils_Tuple3(
-			key,
-			A2(
+		{
+			html: A2(
 				$elm$html$Html$map,
 				specializedMapper,
 				view(model)),
-			A2(
+			key: key,
+			sub: A2(
 				$elm$core$Platform$Sub$map,
 				specializedMapper,
-				subscriptions(model))));
+				subscriptions(model))
+		});
 };
 var $elm$core$Platform$Cmd$map = _Platform_map;
 var $author$project$Page$element = function (record) {
@@ -5342,14 +5344,13 @@ var $author$project$Minimal$GotPageMsg = function (a) {
 var $author$project$Page$update = F2(
 	function (_v0, oldPage) {
 		var lazyTriple = _v0.a;
-		var _v1 = oldPage.a;
-		var modelKey = _v1.a;
-		var _v2 = lazyTriple(_Utils_Tuple0);
-		var newPage = _v2.a;
-		var _v3 = newPage.a;
-		var msgKey = _v3.a;
-		var pageCmd = _v2.b;
-		return _Utils_eq(modelKey, msgKey) ? _Utils_Tuple2(newPage, pageCmd) : _Utils_Tuple2(oldPage, $elm$core$Platform$Cmd$none);
+		var key = oldPage.a.key;
+		var _v1 = lazyTriple(_Utils_Tuple0);
+		var newPage = _v1.a;
+		var rec = newPage.a;
+		var pageCmd = _v1.b;
+		var msgKey = rec.key;
+		return _Utils_eq(key, msgKey) ? _Utils_Tuple2(newPage, pageCmd) : _Utils_Tuple2(oldPage, $elm$core$Platform$Cmd$none);
 	});
 var $author$project$Minimal$update = F2(
 	function (msg, model) {
@@ -5378,8 +5379,7 @@ var $author$project$Minimal$init = function (_v0) {
 };
 var $author$project$Page$mapSubscriptions = F2(
 	function (mapper, _v0) {
-		var _v1 = _v0.a;
-		var sub = _v1.c;
+		var sub = _v0.a.sub;
 		return A2($elm$core$Platform$Sub$map, mapper, sub);
 	});
 var $author$project$Minimal$subscriptions = function (model) {
@@ -5387,9 +5387,8 @@ var $author$project$Minimal$subscriptions = function (model) {
 };
 var $author$project$Page$mapView = F2(
 	function (mapper, _v0) {
-		var _v1 = _v0.a;
-		var view = _v1.b;
-		return A2($elm$html$Html$map, mapper, view);
+		var html = _v0.a.html;
+		return A2($elm$html$Html$map, mapper, html);
 	});
 var $author$project$Minimal$view = function (model) {
 	return A2($author$project$Page$mapView, $author$project$Minimal$GotPageMsg, model.page);

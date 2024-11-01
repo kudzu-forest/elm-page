@@ -307,7 +307,7 @@ type Program flag appMsg
 
 {-| Similar to `Page.element`, but with two additional arguments:
 
-  - The first argument is a function that specifies how your component emits a value that can be captured outside the stream of `InnerMsg`.
+  - The first argument is a function that specifies how your component emits a value that can be captured outside the loop of `InnerMsg`.
       - This function monitors all `InnerMsg`s.
       - If the message is intended to emit a value to the main app, let it return `Just emittedValue`.
       - Otherwise, return `Nothing`.
@@ -417,21 +417,21 @@ elementInner { key, mapper, model, subscriptions, view } =
         }
 
 
-{-| Similar to `Page.mapInit`, but the returned tuple is a triple.
+{-| Functions similarly to `Page.mapInit`, except that the mapped tuple is a triple.
 -}
 mapInit : (( Model appMsg, Cmd (Msg appMsg), Cmd appMsg ) -> appMsg) -> Program flag appMsg -> flag -> appMsg
 mapInit emitterInitialized (Program func) flag =
     emitterInitialized <| func flag
 
 
-{-| Similar to `Page.mapSubscriptions`, this function maps over the subscriptions of the `Emitter.Program`.
+{-| Similarly to `Page.mapSubscriptions`, this function maps over the subscriptions of the `Emitter.Program`.
 -}
 mapSubscriptions : (Msg appMsg -> appMsg) -> Model appMsg -> Sub appMsg
 mapSubscriptions mapper (Model { sub }) =
     Sub.map mapper sub
 
 
-{-| Similar to `Page.mapView`, this function maps over the view of the `Emitter.Program`.
+{-| Similarly to `Page.mapView`, this function maps over the view of the `Emitter.Program`.
 -}
 mapView :
     (Msg appMsg -> appMsg)
@@ -441,7 +441,7 @@ mapView mapper (Model { html }) =
     Html.map mapper html
 
 
-{-| Similar to `Page.updated`, but the returned tuple includes, as its third component, a `Cmd msg` that inserts the emitted `AppMsg` into the main loop of the application.
+{-| Similarly to `Page.updated`, but the returned tuple includes, as its third component, a `Cmd msg` that inserts the emitted `AppMsg` into the main loop of the application.
 -}
 update : Msg appMsg -> Model appMsg -> ( Model appMsg, Cmd (Msg appMsg), Cmd appMsg )
 update (Updated lazy) ((Model { key }) as oldModel) =
