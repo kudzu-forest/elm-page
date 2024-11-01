@@ -15,7 +15,7 @@ import Html.Events exposing (onClick)
 -- MAIN
 
 
-initiate =
+program =
     Page.sandbox { init = init, update = update, view = view }
 
 

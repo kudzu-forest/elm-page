@@ -4,15 +4,15 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
-import Page exposing (Page)
+import Page 
 
 
 
 -- MAIN
 
 
-initiate : () -> Page.Msg
-initiate =
+program : Page.Program ()
+program =
     Page.element
         { init = init
         , view = view

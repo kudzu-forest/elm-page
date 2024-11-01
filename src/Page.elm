@@ -1,169 +1,19 @@
 module Page exposing
-    ( Page, Msg
-    , unwrapMsg
+    ( Model, Msg, Program
     , empty, sandbox, element
-    , mapView, subscribe
+    , mapInit, update, mapView, mapSubscriptions
     )
 
-{-| This module allows you to combine multiple apps created with `Browser.element` into a single application, with or without URL control. The key feature of the `Page` type is that, unlike other attempts to simplify SPA development, it does not use type variables (it's `Page`, not `Page model msg`). This allows you to combine all the pages into a single `List Page`, `Dict String Page`, `Random.Generator Page`, or any other data structure.
+{-| This module allows you to combine multiple apps created with `Browser.element` or `Browser.sandbox` into a single application, with or without URL control. The key feature of the `Program` type is that, unlike other attempts to simplify SPA development, it does not use type variables for inner model and messages (it's `Program flag`, not `Program flag model msg`). This allows you to combine all the pages into a single `List`, `Dict`, `Random.Generator`, or any other data structure you like.
 
-Users need to write a bit of boilerplate. For example, if you want to use the digital clock application (discussed in the official guide's subscription section), you'll need to set up a corresponding module like this. (This code is based on the one in the official guide, with `Page` substituted for `Browser` and `initiate` for `main`.)
-
-    module Pages.Clock exposing (page)
-
-    -- Show the current time in your time zone.
-    --
-    -- Read how it works:
-    --   https://guide.elm-lang.org/effects/time.html
-    --
-    -- For an analog clock, check out this SVG example:
-    --   https://elm-lang.org/examples/clock
-
-    import Html exposing (..)
-    import Page
-    import Task
-    import Time
-
-
-    -- MAIN
-    initiate =
-        Page.element
-            -- -main = Browser.element
-            { init = init
-            , view = view
-            , update = update
-            , subscriptions = subscriptions
-            }
-
-    -- MODEL
-    type alias Model =
-        { zone : Time.Zone
-        , time : Time.Posix
-        }
-
-    init : () -> ( Model, Cmd Msg )
-    init _ =
-        ( Model Time.utc (Time.millisToPosix 0)
-        , Task.perform AdjustTimeZone Time.here
-        )
-
-    -- UPDATE
-    type Msg
-        = Tick Time.Posix
-        | AdjustTimeZone Time.Zone
-
-    update : Msg -> Model -> ( Model, Cmd Msg )
-    update msg model =
-        case msg of
-            Tick newTime ->
-                ( { model | time = newTime }
-                , Cmd.none
-                )
-
-            AdjustTimeZone newZone ->
-                ( { model | zone = newZone }
-                , Cmd.none
-                )
-
-    -- SUBSCRIPTIONS
-    subscriptions : Model -> Sub Msg
-    subscriptions model =
-        Time.every 1000 Tick
-
-    -- VIEW
-    view : Model -> Html Msg
-    view model =
-        let
-            hour =
-                String.fromInt (Time.toHour model.zone model.time)
-
-            minute =
-                String.fromInt (Time.toMinute model.zone model.time)
-
-            second =
-                String.fromInt (Time.toSecond model.zone model.time)
-        in
-        h1 [] [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
-
-And the main app looks like this:
-
-    module Main exposing (..)
-
-    import Browser
-    import Html as H exposing (Html)
-    import Html.Events exposing (onClick)
-    import Pages.Clock
-
-    type alias Model =
-        { page : Page
-        }
-
-    type Msg
-        = PageUpdated Page.Msg
-        | PageReset
-
-    init : () -> ( Model, Cmd Msg )
-    init _ =
-        let
-            ( initialPage, initialCmd ) =
-                Page.unwrapMsg <| Pages.Clock.initiate ()
-        in
-        ( Model initialPage
-        , Cmd.map PageUpdated initialCmd
-        )
-
-    subscriptions : Model -> Sub Msg
-    subscriptions model =
-        -- Don't forget to add this line!
-        Page.subscribe model.page
-
-    update : Msg -> Model -> ( Model, Cmd Msg )
-    update msg model =
-        case msg of
-            PageUpdated m ->
-                -- These lines are boilerplate code.
-                -- You can copy & paste them.
-                let
-                    ( newPage, newCmd ) =
-                        Page.unwrapMsg m
-                in
-                ( { model
-                    | page = newPage
-                  }
-                , Cmd.map PageUpdated newCmd
-                )
-
-            PageReset ->
-                init ()
-
-    view : Model -> Html Msg
-    view model =
-        H.div []
-            [ Page.mapView PageUpdated model.page
-            , H.br [] []
-            , H.button [ onClick PageReset ] [ H.text "Reset" ]
-            ]
-
-    main : Program () Model Msg
-    main =
-        Browser.element
-            { init = init
-            , subscriptions = subscriptions
-            , update = update
-            , view = view
-            }
+Users need to write a bit of boilerplate. For example, if you want to use the digital clock application (discussed in the official guide's subscription section), you'll need to set up a corresponding module like this. (This code is based on the one in the official guide, with first line added and `Page` substituted for `Browser` and `program` for `main`.)
 
 For usage with multiple pages, see [the GitHub repository](https://github.com/kudzu-forest/elm-page).
 
 
-# Types
+# CoreTypes
 
-@docs Page, Msg
-
-
-# Handling Msg
-
-@docs unwrapMsg
+@docs Model, Msg, Program
 
 
 # Creation
@@ -173,63 +23,87 @@ For usage with multiple pages, see [the GitHub repository](https://github.com/ku
 
 # Usage
 
-@docs mapView, subscribe
+@docs mapInit, update, mapView, mapSubscriptions
 
 -}
 
 import Html exposing (Html)
+import Unique exposing (Unique)
 
 
-{-| A custom type that can store the same information as `Browser.element`.
+{-| A custom type representing internal states of your page.
+:::note info
+The `Page.Model` is distinct from the `Model` defined in individual page modules. `Page.Model` provides a level of abstraction that enables consistent handling of all your pages.
+:::
 -}
-type Page
-    = Page ( Html Msg, Sub Msg )
+type Model
+    = Model
+        { key : Unique
+        , html : Html Msg
+        , sub : Sub Msg
+        }
 
 
-{-| A `Msg` type emitted from the page module. You need to use `unwrapMsg` to access this value. See the example above.
+{-| A custom type representing the main program of a page. Values of this type can be passed to the `Page.mapInit` function with a flag.
+-}
+type Program flag
+    = Program (flag -> ( Model, Cmd Msg ))
+
+
+{-| A custom type representing `Msg`s in your page module. You need to use `Page.update` to access this value. See the example above.
 -}
 type Msg
-    = Updated (() -> ( Page, Cmd Msg ))
+    = Updated (() -> ( Model, Cmd Msg ))
 
 
-{-| Similar to `Browser.element`. At initialization, you can pass a value of any type as flags. The resulting `(Page, Cmd Page.Msg)` will be returned wrapped in `Page.Msg`, so you need to `unwrap` the `Page.Msg` value like in the example above or call `update` during the initialization phase, as shown in examples in [the GitHub repository](https://github.com/kudzu-forest/elm-page). -}
+{-| Functions similarly to `Browser.element`. The return value is wrapped in `Page.Program` and can be passed to `Page.mapInit` along with a flag.
+-}
 element :
     { init : flag -> ( model, Cmd msg )
     , subscriptions : model -> Sub msg
     , update : msg -> model -> ( model, Cmd msg )
     , view : model -> Html msg
     }
-    -> flag
-    -> Msg
-element { init, subscriptions, update, view } flag =
-    let
-        ( initialModel, initialCmd ) =
-            init flag
-
-        mapper model msg =
+    -> Program flag
+element record =
+    Program <|
+        \flag ->
             let
-                ( newModel, cmd ) =
-                    update msg model
+                { init, subscriptions, view } =
+                    record
+
+                update_ =
+                    record.update
+
+                key =
+                    Unique.unique ()
+
+                ( initialModel, initialCmd ) =
+                    init flag
+
+                mapper : model -> msg -> Msg
+                mapper model msg =
+                    let
+                        ( newModel, cmd ) =
+                            update_ msg model
+                    in
+                    Updated
+                        (\() ->
+                            ( elementInner
+                                { key = key
+                                , model = newModel
+                                , subscriptions = subscriptions
+                                , view = view
+                                , mapper = mapper
+                                }
+                            , Cmd.map (mapper newModel) cmd
+                            )
+                        )
             in
-            Updated
-                (\() ->
-                    ( elementInner
-                        { model = newModel
-                        , subscriptions = subscriptions
-                        , update = update
-                        , view = view
-                        , mapper = mapper
-                        }
-                    , Cmd.map (mapper newModel) cmd
-                    )
-                )
-    in
-    Updated <|
-        \() ->
             ( elementInner
-                { model = initialModel
+                { key = key
+                , model = initialModel
                 , subscriptions = subscriptions
-                , update = update
                 , view = view
                 , mapper = mapper
                 }
@@ -238,46 +112,46 @@ element { init, subscriptions, update, view } flag =
 
 
 elementInner :
-    { model : model
+    { key : Unique
+    , model : model
     , subscriptions : model -> Sub msg
-    , update : msg -> model -> ( model, Cmd msg )
     , view : model -> Html msg
     , mapper : model -> msg -> Msg
     }
-    -> Page
-elementInner { model, subscriptions, update, view, mapper } =
+    -> Model
+elementInner { key, model, subscriptions, view, mapper } =
     let
-        specialMapper =
+        specializedMapper =
             mapper model
     in
-    Page
-        ( Html.map specialMapper (view model)
-        , Sub.map specialMapper (subscriptions model)
-        )
+    Model
+        { key = key
+        , html = Html.map specializedMapper (view model)
+        , sub = Sub.map specializedMapper (subscriptions model)
+        }
 
 
-{-| Similar to `Browser.sandbox`. You can create a `Page` easily by just substituting `Page` for `Browser`.
+{-| Functions similarly to `Browser.sandbox`. You can create a `Page.Program ()` easily by just using `Page.sandbox` instead of `Browser.sandbox`.
 -}
 sandbox :
     { init : model
     , update : msg -> model -> model
     , view : model -> Html msg
     }
-    -> Msg
-sandbox { init, update, view } =
+    -> Program ()
+sandbox record =
     element
-        { init = \() -> ( init, Cmd.none )
+        { init = \() -> ( record.init, Cmd.none )
         , subscriptions = \_ -> Sub.none
-        , update = \msg model -> ( update msg model, Cmd.none )
-        , view = view
+        , update = \msg model -> ( record.update msg model, Cmd.none )
+        , view = record.view
         }
-        ()
 
 
 {-| Don't forget to use this in your `subscriptions` in the parent module!
 -}
-subscribe : (Msg -> appMsg) -> Page -> Sub appMsg
-subscribe mapper (Page ( _, sub )) =
+mapSubscriptions : (Msg -> appMsg) -> Model -> Sub appMsg
+mapSubscriptions mapper (Model { sub }) =
     Sub.map mapper sub
 
 
@@ -285,30 +159,47 @@ subscribe mapper (Page ( _, sub )) =
 -}
 mapView :
     (Msg -> appMsg)
-    -> Page
+    -> Model
     -> Html appMsg
-mapView mapper (Page ( innerView, _ )) =
-    Html.map mapper innerView
+mapView mapper (Model { html }) =
+    Html.map mapper html
 
 
-{-| The only way to handle messages from a child component.
+{-| The only way to handle `Page.Msg` value from a child component.
+:::note warn
+The `Page.Msg` value is ignored if the page which has emitted the `Page.Msg` value of first argument and `Model` value of second argument does not match.
+For example, some delayed `Cmd Page.Msg` like `Process.sleep 10000 |> Task.perform (\_ -> SomeMsg)` is made then `Page.mapInit` is called before arrival of the returned `Page.Msg`.
+:::
 -}
-unwrapMsg : Msg -> ( Page, Cmd Msg )
-unwrapMsg (Updated lazyPair) =
-    lazyPair ()
+update : Msg -> Model -> ( Model, Cmd Msg )
+update (Updated lazyTriple) ((Model { key }) as oldPage) =
+    let
+        ( (Model rec) as newPage, pageCmd ) =
+            lazyTriple ()
+
+        msgKey =
+            rec.key
+    in
+    if key == msgKey then
+        ( newPage, pageCmd )
+
+    else
+        ( oldPage, Cmd.none )
 
 
-{-| An empty page. useful for initialization.
+{-| The only way you can start new page.
 -}
-empty : Page
+mapInit : (( Model, Cmd Msg ) -> appMsg) -> Program flag -> flag -> appMsg
+mapInit mapper (Program func) flag =
+    mapper <| func flag
+
+
+{-| An empty page. This can be used for initialization. See example above.
+-}
+empty : Model
 empty =
-    sandbox
-        { init = ()
-        , update = \_ _ -> ()
-        , view = \_ -> Html.text ""
+    Model
+        { key = Unique.unique ()
+        , html = Html.text ""
+        , sub = Sub.none
         }
-        |> unwrapMsg
-        |> Tuple.first
-
-
-

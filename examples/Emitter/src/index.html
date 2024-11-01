@@ -5173,11 +5173,39 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$FormUpdated = function (a) {
-	return {$: 'FormUpdated', a: a};
+var $author$project$Main$FormInitialized = function (a) {
+	return {$: 'FormInitialized', a: a};
 };
 var $author$project$Main$UserSubmitted = function (a) {
 	return {$: 'UserSubmitted', a: a};
+};
+var $author$project$Emitter$Model = function (a) {
+	return {$: 'Model', a: a};
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $harrysarson$elm_hacky_unique$Unique$UniqueImpl = function (a) {
+	return {$: 'UniqueImpl', a: a};
+};
+var $harrysarson$elm_hacky_unique$Unique$unique = function (_v0) {
+	return $harrysarson$elm_hacky_unique$Unique$UniqueImpl(0 / 0);
+};
+var $author$project$Emitter$empty = $author$project$Emitter$Model(
+	{
+		html: $elm$html$Html$text(''),
+		key: $harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0),
+		sub: $elm$core$Platform$Sub$none
+	});
+var $author$project$Emitter$mapInit = F3(
+	function (emitterInitialized, _v0, flag) {
+		var func = _v0.a;
+		return emitterInitialized(
+			func(flag));
+	});
+var $author$project$Emitter$Program = function (a) {
+	return {$: 'Program', a: a};
 };
 var $author$project$Emitter$Updated = function (a) {
 	return {$: 'Updated', a: a};
@@ -5187,30 +5215,28 @@ var $elm$core$Basics$composeR = F3(
 		return g(
 			f(x));
 	});
-var $author$project$Emitter$Emitter = function (a) {
-	return {$: 'Emitter', a: a};
-};
 var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $author$project$Emitter$elementInner = function (_v0) {
-	var router = _v0.router;
+	var key = _v0.key;
 	var mapper = _v0.mapper;
 	var model = _v0.model;
 	var subscriptions = _v0.subscriptions;
-	var update = _v0.update;
 	var view = _v0.view;
 	var specializedMapper = mapper(model);
-	return $author$project$Emitter$Emitter(
-		_Utils_Tuple2(
-			A2(
+	return $author$project$Emitter$Model(
+		{
+			html: A2(
 				$elm$html$Html$map,
 				specializedMapper,
 				view(model)),
-			A2(
+			key: key,
+			sub: A2(
 				$elm$core$Platform$Sub$map,
 				specializedMapper,
-				subscriptions(model))));
+				subscriptions(model))
+		});
 };
 var $elm_community$maybe_extra$Maybe$Extra$isJust = function (m) {
 	if (m.$ === 'Nothing') {
@@ -5232,47 +5258,79 @@ var $elm$core$Maybe$map = F2(
 var $elm$core$Platform$Cmd$map = _Platform_map;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $author$project$Emitter$element = F4(
-	function (router_, _v0, toAppMsg, flag) {
+var $author$project$Emitter$update = F2(
+	function (_v0, oldModel) {
+		var lazy = _v0.a;
+		var key = oldModel.a.key;
+		var _v1 = lazy(_Utils_Tuple0);
+		var updated = _v1.a;
+		var rec = updated.a;
+		var innerCmd = _v1.b;
+		var maybeAppMsg = _v1.c;
+		var emittedCmd = function () {
+			if (maybeAppMsg.$ === 'Nothing') {
+				return $elm$core$Platform$Cmd$none;
+			} else {
+				var msg = maybeAppMsg.a;
+				return A2(
+					$elm$core$Task$perform,
+					$elm$core$Basics$identity,
+					$elm$core$Task$succeed(msg));
+			}
+		}();
+		var newKey = rec.key;
+		return _Utils_eq(newKey, key) ? _Utils_Tuple3(updated, innerCmd, emittedCmd) : _Utils_Tuple3(oldModel, $elm$core$Platform$Cmd$none, emittedCmd);
+	});
+var $author$project$Emitter$element = F3(
+	function (router_, rec, toAppMsg) {
+		var update_ = rec.update;
+		var _v0 = rec;
 		var init = _v0.init;
 		var subscriptions = _v0.subscriptions;
-		var update = _v0.update;
 		var view = _v0.view;
-		var router = A2(
-			$elm$core$Basics$composeR,
-			router_,
-			$elm$core$Maybe$map(toAppMsg));
-		var mapper = F2(
-			function (model, innerMsg) {
-				var mMsg = router(innerMsg);
-				var _v1 = A2(update, innerMsg, model);
-				var newModel = _v1.a;
-				var cmd = _v1.b;
-				return $author$project$Emitter$Updated(
-					function (_v2) {
-						return _Utils_Tuple3(
-							$author$project$Emitter$elementInner(
-								{mapper: mapper, model: newModel, router: router, subscriptions: subscriptions, update: update, view: view}),
-							$elm_community$maybe_extra$Maybe$Extra$isJust(mMsg) ? $elm$core$Platform$Cmd$none : A2(
-								$elm$core$Platform$Cmd$map,
-								mapper(newModel),
-								cmd),
-							mMsg);
+		return $author$project$Emitter$Program(
+			function (flag) {
+				var router = A2(
+					$elm$core$Basics$composeR,
+					router_,
+					$elm$core$Maybe$map(toAppMsg));
+				var key = $harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0);
+				var mapper = F2(
+					function (model, innerMsg) {
+						var mMsg = router(innerMsg);
+						var _v1 = A2(update_, innerMsg, model);
+						var newModel = _v1.a;
+						var cmd = _v1.b;
+						return $author$project$Emitter$Updated(
+							function (_v2) {
+								return _Utils_Tuple3(
+									$author$project$Emitter$elementInner(
+										{key: key, mapper: mapper, model: newModel, subscriptions: subscriptions, view: view}),
+									$elm_community$maybe_extra$Maybe$Extra$isJust(mMsg) ? $elm$core$Platform$Cmd$none : A2(
+										$elm$core$Platform$Cmd$map,
+										mapper(newModel),
+										cmd),
+									mMsg);
+							});
 					});
-			});
-		var _v3 = init(flag);
-		var initialModel = _v3.a;
-		var initialCmd = _v3.b;
-		return $author$project$Emitter$Updated(
-			function (_v4) {
-				return _Utils_Tuple3(
-					$author$project$Emitter$elementInner(
-						{mapper: mapper, model: initialModel, router: router, subscriptions: subscriptions, update: update, view: view}),
-					A2(
-						$elm$core$Platform$Cmd$map,
-						mapper(initialModel),
-						initialCmd),
-					$elm$core$Maybe$Nothing);
+				var _v3 = init(flag);
+				var initialModel = _v3.a;
+				var initialCmd = _v3.b;
+				var model_ = $author$project$Emitter$elementInner(
+					{key: key, mapper: mapper, model: initialModel, subscriptions: subscriptions, view: view});
+				return A2(
+					$author$project$Emitter$update,
+					$author$project$Emitter$Updated(
+						function (_v4) {
+							return _Utils_Tuple3(
+								model_,
+								A2(
+									$elm$core$Platform$Cmd$map,
+									mapper(initialModel),
+									initialCmd),
+								$elm$core$Maybe$Nothing);
+						}),
+					model_);
 			});
 	});
 var $author$project$UserForm$init = function (_v0) {
@@ -5280,8 +5338,6 @@ var $author$project$UserForm$init = function (_v0) {
 		{ageInput: '', nameInput: '', tried: false},
 		$elm$core$Platform$Cmd$none);
 };
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$UserForm$NoOp = {$: 'NoOp'};
 var $author$project$UserForm$User = F2(
 	function (name, age) {
@@ -5462,8 +5518,6 @@ var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProp
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$UserForm$view = function (model) {
@@ -5546,7 +5600,7 @@ var $author$project$UserForm$view = function (model) {
 					]))
 			]));
 };
-var $author$project$UserForm$initiate = A2(
+var $author$project$UserForm$program = A2(
 	$author$project$Emitter$element,
 	function (msg) {
 		if (msg.$ === 'Emit') {
@@ -5564,77 +5618,76 @@ var $author$project$UserForm$initiate = A2(
 		update: $author$project$UserForm$update,
 		view: $author$project$UserForm$view
 	});
-var $author$project$Emitter$unwrapMsg = function (_v0) {
-	var lazy = _v0.a;
-	var _v1 = lazy(_Utils_Tuple0);
-	var updated = _v1.a;
-	var innerCmd = _v1.b;
-	var maybeAppMsg = _v1.c;
-	var emittedCmd = function () {
-		if (maybeAppMsg.$ === 'Nothing') {
-			return $elm$core$Platform$Cmd$none;
-		} else {
-			var msg = maybeAppMsg.a;
-			return A2(
-				$elm$core$Task$perform,
-				$elm$core$Basics$identity,
-				$elm$core$Task$succeed(msg));
-		}
-	}();
-	return _Utils_Tuple3(updated, innerCmd, emittedCmd);
+var $author$project$Main$GotFormMsg = function (a) {
+	return {$: 'GotFormMsg', a: a};
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'FormUpdated') {
-			var emitterMsg = msg.a;
-			var _v1 = $author$project$Emitter$unwrapMsg(emitterMsg);
-			var emt = _v1.a;
-			var cmdInner = _v1.b;
-			var cmdMsg = _v1.c;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{userForm: emt}),
-				$elm$core$Platform$Cmd$batch(
-					_List_fromArray(
-						[
-							A2($elm$core$Platform$Cmd$map, $author$project$Main$FormUpdated, cmdInner),
-							cmdMsg
-						])));
-		} else {
-			var u = msg.a;
-			return _Utils_Tuple2(
-				_Utils_update(
-					model,
-					{
-						user: $elm$core$Maybe$Just(u)
-					}),
-				$elm$core$Platform$Cmd$none);
+		switch (msg.$) {
+			case 'FormInitialized':
+				var _v1 = msg.a;
+				var emt = _v1.a;
+				var cmdInner = _v1.b;
+				var cmdMsg = _v1.c;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{userForm: emt}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2($elm$core$Platform$Cmd$map, $author$project$Main$GotFormMsg, cmdInner),
+								cmdMsg
+							])));
+			case 'GotFormMsg':
+				var m = msg.a;
+				var _v2 = A2($author$project$Emitter$update, m, model.userForm);
+				var emt = _v2.a;
+				var cmdInner = _v2.b;
+				var cmdMsg = _v2.c;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{userForm: emt}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A2($elm$core$Platform$Cmd$map, $author$project$Main$GotFormMsg, cmdInner),
+								cmdMsg
+							])));
+			default:
+				var u = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							user: $elm$core$Maybe$Just(u)
+						}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$init = function (_v0) {
-	var emitterMsg = A2($author$project$UserForm$initiate, $author$project$Main$UserSubmitted, _Utils_Tuple0);
-	var _v1 = $author$project$Emitter$unwrapMsg(emitterMsg);
-	var emt = _v1.a;
 	return A2(
 		$author$project$Main$update,
-		$author$project$Main$FormUpdated(emitterMsg),
-		{user: $elm$core$Maybe$Nothing, userForm: emt});
+		A3(
+			$author$project$Emitter$mapInit,
+			$author$project$Main$FormInitialized,
+			$author$project$UserForm$program($author$project$Main$UserSubmitted),
+			_Utils_Tuple0),
+		{user: $elm$core$Maybe$Nothing, userForm: $author$project$Emitter$empty});
 };
-var $author$project$Emitter$subscribe = F2(
+var $author$project$Emitter$mapSubscriptions = F2(
 	function (mapper, _v0) {
-		var _v1 = _v0.a;
-		var sub = _v1.b;
+		var sub = _v0.a.sub;
 		return A2($elm$core$Platform$Sub$map, mapper, sub);
 	});
 var $author$project$Main$subscriptions = function (model) {
-	return A2($author$project$Emitter$subscribe, $author$project$Main$FormUpdated, model.userForm);
+	return A2($author$project$Emitter$mapSubscriptions, $author$project$Main$GotFormMsg, model.userForm);
 };
 var $author$project$Emitter$mapView = F2(
 	function (mapper, _v0) {
-		var _v1 = _v0.a;
-		var innerView = _v1.a;
-		return A2($elm$html$Html$map, mapper, innerView);
+		var html = _v0.a.html;
+		return A2($elm$html$Html$map, mapper, html);
 	});
 var $author$project$Main$view = function (model) {
 	return A2(
@@ -5650,7 +5703,7 @@ var $author$project$Main$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						A2($author$project$Emitter$mapView, $author$project$Main$FormUpdated, model.userForm)
+						A2($author$project$Emitter$mapView, $author$project$Main$GotFormMsg, model.userForm)
 					])),
 				function () {
 				var _v0 = model.user;

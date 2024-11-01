@@ -5417,119 +5417,120 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$ManyPages$PageUpdated = function (a) {
-	return {$: 'PageUpdated', a: a};
+var $author$project$ManyPages$PageInitialized = function (a) {
+	return {$: 'PageInitialized', a: a};
+};
+var $author$project$Page$Model = function (a) {
+	return {$: 'Model', a: a};
+};
+var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $harrysarson$elm_hacky_unique$Unique$UniqueImpl = function (a) {
+	return {$: 'UniqueImpl', a: a};
+};
+var $harrysarson$elm_hacky_unique$Unique$unique = function (_v0) {
+	return $harrysarson$elm_hacky_unique$Unique$UniqueImpl(0 / 0);
+};
+var $author$project$Page$empty = $author$project$Page$Model(
+	_Utils_Tuple3(
+		$harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0),
+		$elm$html$Html$text(''),
+		$elm$core$Platform$Sub$none));
+var $author$project$Page$mapInit = F3(
+	function (mapper, _v0, flag) {
+		var func = _v0.a;
+		return mapper(
+			func(flag));
+	});
+var $author$project$Pages$Buttons$init = 0;
+var $author$project$Page$Program = function (a) {
+	return {$: 'Program', a: a};
 };
 var $author$project$Page$Updated = function (a) {
 	return {$: 'Updated', a: a};
-};
-var $author$project$Page$Page = function (a) {
-	return {$: 'Page', a: a};
 };
 var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $author$project$Page$elementInner = function (_v0) {
+	var key = _v0.key;
 	var model = _v0.model;
 	var subscriptions = _v0.subscriptions;
-	var update = _v0.update;
 	var view = _v0.view;
 	var mapper = _v0.mapper;
-	var specialMapper = mapper(model);
-	return $author$project$Page$Page(
-		_Utils_Tuple2(
+	var specializedMapper = mapper(model);
+	return $author$project$Page$Model(
+		_Utils_Tuple3(
+			key,
 			A2(
 				$elm$html$Html$map,
-				specialMapper,
+				specializedMapper,
 				view(model)),
 			A2(
 				$elm$core$Platform$Sub$map,
-				specialMapper,
+				specializedMapper,
 				subscriptions(model))));
 };
 var $elm$core$Platform$Cmd$map = _Platform_map;
-var $author$project$Page$element = F2(
-	function (_v0, flag) {
-		var init = _v0.init;
-		var subscriptions = _v0.subscriptions;
-		var update = _v0.update;
-		var view = _v0.view;
-		var mapper = F2(
-			function (model, msg) {
-				var _v1 = A2(update, msg, model);
-				var newModel = _v1.a;
-				var cmd = _v1.b;
-				return $author$project$Page$Updated(
-					function (_v2) {
-						return _Utils_Tuple2(
-							$author$project$Page$elementInner(
-								{mapper: mapper, model: newModel, subscriptions: subscriptions, update: update, view: view}),
-							A2(
-								$elm$core$Platform$Cmd$map,
-								mapper(newModel),
-								cmd));
-					});
-			});
-		var _v3 = init(flag);
-		var initialModel = _v3.a;
-		var initialCmd = _v3.b;
-		return $author$project$Page$Updated(
-			function (_v4) {
-				return _Utils_Tuple2(
-					$author$project$Page$elementInner(
-						{mapper: mapper, model: initialModel, subscriptions: subscriptions, update: update, view: view}),
-					A2(
-						$elm$core$Platform$Cmd$map,
-						mapper(initialModel),
-						initialCmd));
-			});
-	});
+var $author$project$Page$element = function (record) {
+	return $author$project$Page$Program(
+		function (flag) {
+			var update_ = record.update;
+			var key = $harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0);
+			var _v0 = record;
+			var init = _v0.init;
+			var subscriptions = _v0.subscriptions;
+			var view = _v0.view;
+			var mapper = F2(
+				function (model, msg) {
+					var _v1 = A2(update_, msg, model);
+					var newModel = _v1.a;
+					var cmd = _v1.b;
+					return $author$project$Page$Updated(
+						function (_v2) {
+							return _Utils_Tuple2(
+								$author$project$Page$elementInner(
+									{key: key, mapper: mapper, model: newModel, subscriptions: subscriptions, view: view}),
+								A2(
+									$elm$core$Platform$Cmd$map,
+									mapper(newModel),
+									cmd));
+						});
+				});
+			var _v3 = init(flag);
+			var initialModel = _v3.a;
+			var initialCmd = _v3.b;
+			return _Utils_Tuple2(
+				$author$project$Page$elementInner(
+					{key: key, mapper: mapper, model: initialModel, subscriptions: subscriptions, view: view}),
+				A2(
+					$elm$core$Platform$Cmd$map,
+					mapper(initialModel),
+					initialCmd));
+		});
+};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Page$sandbox = function (_v0) {
-	var init = _v0.init;
-	var update = _v0.update;
-	var view = _v0.view;
-	return A2(
-		$author$project$Page$element,
+var $author$project$Page$sandbox = function (record) {
+	return $author$project$Page$element(
 		{
-			init: function (_v1) {
-				return _Utils_Tuple2(init, $elm$core$Platform$Cmd$none);
+			init: function (_v0) {
+				return _Utils_Tuple2(record.init, $elm$core$Platform$Cmd$none);
 			},
-			subscriptions: function (_v2) {
+			subscriptions: function (_v1) {
 				return $elm$core$Platform$Sub$none;
 			},
 			update: F2(
 				function (msg, model) {
 					return _Utils_Tuple2(
-						A2(update, msg, model),
+						A2(record.update, msg, model),
 						$elm$core$Platform$Cmd$none);
 				}),
-			view: view
-		},
-		_Utils_Tuple0);
+			view: record.view
+		});
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Page$unwrapMsg = function (_v0) {
-	var lazyPair = _v0.a;
-	return lazyPair(_Utils_Tuple0);
-};
-var $author$project$Page$empty = $author$project$Page$unwrapMsg(
-	$author$project$Page$sandbox(
-		{
-			init: _Utils_Tuple0,
-			update: F2(
-				function (_v0, _v1) {
-					return _Utils_Tuple0;
-				}),
-			view: function (_v2) {
-				return $elm$html$Html$text('');
-			}
-		})).a;
-var $author$project$Pages$Buttons$init = 0;
 var $author$project$Pages$Buttons$update = F2(
 	function (msg, model) {
 		if (msg.$ === 'Increment') {
@@ -5595,34 +5596,60 @@ var $author$project$Pages$Buttons$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$Buttons$initiate = $author$project$Page$sandbox(
+var $author$project$Pages$Buttons$program = $author$project$Page$sandbox(
 	{init: $author$project$Pages$Buttons$init, update: $author$project$Pages$Buttons$update, view: $author$project$Pages$Buttons$view});
+var $author$project$ManyPages$PageUpdated = function (a) {
+	return {$: 'PageUpdated', a: a};
+};
+var $author$project$Page$update = F2(
+	function (_v0, oldPage) {
+		var lazyTriple = _v0.a;
+		var _v1 = oldPage.a;
+		var modelKey = _v1.a;
+		var _v2 = lazyTriple(_Utils_Tuple0);
+		var newPage = _v2.a;
+		var _v3 = newPage.a;
+		var msgKey = _v3.a;
+		var pageCmd = _v2.b;
+		return _Utils_eq(modelKey, msgKey) ? _Utils_Tuple2(newPage, pageCmd) : _Utils_Tuple2(oldPage, $elm$core$Platform$Cmd$none);
+	});
 var $author$project$ManyPages$update = F2(
 	function (msg, model) {
-		var pmsg = msg.a;
-		var _v1 = $author$project$Page$unwrapMsg(pmsg);
-		var p = _v1.a;
-		var pcmd = _v1.b;
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{page: p}),
-			A2($elm$core$Platform$Cmd$map, $author$project$ManyPages$PageUpdated, pcmd));
+		if (msg.$ === 'PageUpdated') {
+			var pmsg = msg.a;
+			var _v1 = A2($author$project$Page$update, pmsg, model.page);
+			var p = _v1.a;
+			var pcmd = _v1.b;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{page: p}),
+				A2($elm$core$Platform$Cmd$map, $author$project$ManyPages$PageUpdated, pcmd));
+		} else {
+			var _v2 = msg.a;
+			var p = _v2.a;
+			var pcmd = _v2.b;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{page: p}),
+				A2($elm$core$Platform$Cmd$map, $author$project$ManyPages$PageUpdated, pcmd));
+		}
 	});
 var $author$project$ManyPages$init = function (_v0) {
 	return A2(
 		$author$project$ManyPages$update,
-		$author$project$ManyPages$PageUpdated($author$project$Pages$Buttons$initiate),
+		A3($author$project$Page$mapInit, $author$project$ManyPages$PageInitialized, $author$project$Pages$Buttons$program, _Utils_Tuple0),
 		{page: $author$project$Page$empty});
 };
-var $author$project$Page$subscribe = F2(
+var $author$project$Page$mapSubscriptions = F2(
 	function (mapper, _v0) {
 		var _v1 = _v0.a;
-		var sub = _v1.b;
+		var sub = _v1.c;
 		return A2($elm$core$Platform$Sub$map, mapper, sub);
 	});
 var $author$project$ManyPages$subscriptions = function (model) {
-	return A2($author$project$Page$subscribe, $author$project$ManyPages$PageUpdated, model.page);
+	return A2($author$project$Page$mapSubscriptions, $author$project$ManyPages$PageUpdated, model.page);
 };
 var $elm$html$Html$br = _VirtualDom_node('br');
 var $elm$core$List$intersperse = F2(
@@ -5646,8 +5673,16 @@ var $elm$core$List$intersperse = F2(
 var $author$project$Page$mapView = F2(
 	function (mapper, _v0) {
 		var _v1 = _v0.a;
-		var innerView = _v1.a;
-		return A2($elm$html$Html$map, mapper, innerView);
+		var view = _v1.b;
+		return A2($elm$html$Html$map, mapper, view);
+	});
+var $elm$core$Tuple$mapSecond = F2(
+	function (func, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_Tuple2(
+			x,
+			func(y));
 	});
 var $author$project$Pages$Book$GotText = function (a) {
 	return {$: 'GotText', a: a};
@@ -6478,7 +6513,7 @@ var $author$project$Pages$Book$view = function (model) {
 					]));
 	}
 };
-var $author$project$Pages$Book$initiate = $author$project$Page$element(
+var $author$project$Pages$Book$program = $author$project$Page$element(
 	{init: $author$project$Pages$Book$init, subscriptions: $author$project$Pages$Book$subscriptions, update: $author$project$Pages$Book$update, view: $author$project$Pages$Book$view});
 var $author$project$Pages$Forms$Model = F3(
 	function (name, password, passwordAgain) {
@@ -6607,7 +6642,7 @@ var $author$project$Pages$Forms$view = function (model) {
 				$author$project$Pages$Forms$viewValidation(model)
 			]));
 };
-var $author$project$Pages$Forms$initiate = $author$project$Page$sandbox(
+var $author$project$Pages$Forms$program = $author$project$Page$sandbox(
 	{init: $author$project$Pages$Forms$init, update: $author$project$Pages$Forms$update, view: $author$project$Pages$Forms$view});
 var $author$project$Pages$Numbers$Model = function (dieFace) {
 	return {dieFace: dieFace};
@@ -6816,7 +6851,7 @@ var $author$project$Pages$Numbers$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$Numbers$initiate = $author$project$Page$element(
+var $author$project$Pages$Numbers$program = $author$project$Page$element(
 	{init: $author$project$Pages$Numbers$init, subscriptions: $author$project$Pages$Numbers$subscriptions, update: $author$project$Pages$Numbers$update, view: $author$project$Pages$Numbers$view});
 var $author$project$Pages$Quotes$Loading = {$: 'Loading'};
 var $author$project$Pages$Quotes$GotQuote = function (a) {
@@ -6970,7 +7005,7 @@ var $author$project$Pages$Quotes$view = function (model) {
 				$author$project$Pages$Quotes$viewQuote(model)
 			]));
 };
-var $author$project$Pages$Quotes$initiate = $author$project$Page$element(
+var $author$project$Pages$Quotes$program = $author$project$Page$element(
 	{init: $author$project$Pages$Quotes$init, subscriptions: $author$project$Pages$Quotes$subscriptions, update: $author$project$Pages$Quotes$update, view: $author$project$Pages$Quotes$view});
 var $author$project$Pages$TextFields$init = {content: ''};
 var $author$project$Pages$TextFields$update = F2(
@@ -7009,7 +7044,7 @@ var $author$project$Pages$TextFields$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$TextFields$initiate = $author$project$Page$sandbox(
+var $author$project$Pages$TextFields$program = $author$project$Page$sandbox(
 	{init: $author$project$Pages$TextFields$init, update: $author$project$Pages$TextFields$update, view: $author$project$Pages$TextFields$view});
 var $author$project$Pages$Time$AdjustTimeZone = function (a) {
 	return {$: 'AdjustTimeZone', a: a};
@@ -7389,7 +7424,7 @@ var $author$project$Pages$Time$view = function (model) {
 				$elm$html$Html$text(hour + (':' + (minute + (':' + second))))
 			]));
 };
-var $author$project$Pages$Time$initiate = $author$project$Page$element(
+var $author$project$Pages$Time$program = $author$project$Page$element(
 	{init: $author$project$Pages$Time$init, subscriptions: $author$project$Pages$Time$subscriptions, update: $author$project$Pages$Time$update, view: $author$project$Pages$Time$view});
 var $author$project$Pages$WebSocket$init = function (flags) {
 	return _Utils_Tuple2(
@@ -7504,38 +7539,33 @@ var $author$project$Pages$WebSocket$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$WebSocket$initiate = $author$project$Page$element(
+var $author$project$Pages$WebSocket$program = $author$project$Page$element(
 	{init: $author$project$Pages$WebSocket$init, subscriptions: $author$project$Pages$WebSocket$subscriptions, update: $author$project$Pages$WebSocket$update, view: $author$project$Pages$WebSocket$view});
-var $author$project$ManyPages$pages = _List_fromArray(
-	[
-		_Utils_Tuple2('counter', $author$project$Pages$Buttons$initiate),
-		_Utils_Tuple2('reversing text', $author$project$Pages$TextFields$initiate),
-		_Utils_Tuple2('form control', $author$project$Pages$Forms$initiate),
-		_Utils_Tuple2(
-		'Book through Http',
-		$author$project$Pages$Book$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'Quotes through Json',
-		$author$project$Pages$Quotes$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'Random dice',
-		$author$project$Pages$Numbers$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'What time is it now?',
-		$author$project$Pages$Time$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'Web socket',
-		$author$project$Pages$WebSocket$initiate(_Utils_Tuple0))
-	]);
+var $author$project$ManyPages$pages = A2(
+	$elm$core$List$map,
+	$elm$core$Tuple$mapSecond(
+		function (program) {
+			return A3($author$project$Page$mapInit, $author$project$ManyPages$PageInitialized, program, _Utils_Tuple0);
+		}),
+	_List_fromArray(
+		[
+			_Utils_Tuple2('counter', $author$project$Pages$Buttons$program),
+			_Utils_Tuple2('reversing text', $author$project$Pages$TextFields$program),
+			_Utils_Tuple2('form control', $author$project$Pages$Forms$program),
+			_Utils_Tuple2('Book through Http', $author$project$Pages$Book$program),
+			_Utils_Tuple2('Quotes through Json', $author$project$Pages$Quotes$program),
+			_Utils_Tuple2('Random dice', $author$project$Pages$Numbers$program),
+			_Utils_Tuple2('What time is it now?', $author$project$Pages$Time$program),
+			_Utils_Tuple2('Web socket', $author$project$Pages$WebSocket$program)
+		]));
 var $author$project$ManyPages$toButton = function (_v0) {
 	var name = _v0.a;
-	var pageMsg = _v0.b;
+	var initializeMsg = _v0.b;
 	return A2(
 		$elm$html$Html$button,
 		_List_fromArray(
 			[
-				$elm$html$Html$Events$onClick(
-				$author$project$ManyPages$PageUpdated(pageMsg))
+				$elm$html$Html$Events$onClick(initializeMsg)
 			]),
 		_List_fromArray(
 			[

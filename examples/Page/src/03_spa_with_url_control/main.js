@@ -5440,186 +5440,33 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
-var $author$project$SPA$PageUpdated = function (a) {
-	return {$: 'PageUpdated', a: a};
+var $author$project$SPA$PageInitialized = function (a) {
+	return {$: 'PageInitialized', a: a};
 };
-var $author$project$Page$Updated = function (a) {
-	return {$: 'Updated', a: a};
+var $author$project$Page$Model = function (a) {
+	return {$: 'Model', a: a};
 };
-var $author$project$Page$Page = function (a) {
-	return {$: 'Page', a: a};
-};
-var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
-var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
-var $elm$core$Platform$Sub$map = _Platform_map;
-var $author$project$Page$elementInner = function (_v0) {
-	var model = _v0.model;
-	var subscriptions = _v0.subscriptions;
-	var update = _v0.update;
-	var view = _v0.view;
-	var mapper = _v0.mapper;
-	var specialMapper = mapper(model);
-	return $author$project$Page$Page(
-		_Utils_Tuple2(
-			A2(
-				$elm$html$Html$map,
-				specialMapper,
-				view(model)),
-			A2(
-				$elm$core$Platform$Sub$map,
-				specialMapper,
-				subscriptions(model))));
-};
-var $elm$core$Platform$Cmd$map = _Platform_map;
-var $author$project$Page$element = F2(
-	function (_v0, flag) {
-		var init = _v0.init;
-		var subscriptions = _v0.subscriptions;
-		var update = _v0.update;
-		var view = _v0.view;
-		var mapper = F2(
-			function (model, msg) {
-				var _v1 = A2(update, msg, model);
-				var newModel = _v1.a;
-				var cmd = _v1.b;
-				return $author$project$Page$Updated(
-					function (_v2) {
-						return _Utils_Tuple2(
-							$author$project$Page$elementInner(
-								{mapper: mapper, model: newModel, subscriptions: subscriptions, update: update, view: view}),
-							A2(
-								$elm$core$Platform$Cmd$map,
-								mapper(newModel),
-								cmd));
-					});
-			});
-		var _v3 = init(flag);
-		var initialModel = _v3.a;
-		var initialCmd = _v3.b;
-		return $author$project$Page$Updated(
-			function (_v4) {
-				return _Utils_Tuple2(
-					$author$project$Page$elementInner(
-						{mapper: mapper, model: initialModel, subscriptions: subscriptions, update: update, view: view}),
-					A2(
-						$elm$core$Platform$Cmd$map,
-						mapper(initialModel),
-						initialCmd));
-			});
-	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Page$sandbox = function (_v0) {
-	var init = _v0.init;
-	var update = _v0.update;
-	var view = _v0.view;
-	return A2(
-		$author$project$Page$element,
-		{
-			init: function (_v1) {
-				return _Utils_Tuple2(init, $elm$core$Platform$Cmd$none);
-			},
-			subscriptions: function (_v2) {
-				return $elm$core$Platform$Sub$none;
-			},
-			update: F2(
-				function (msg, model) {
-					return _Utils_Tuple2(
-						A2(update, msg, model),
-						$elm$core$Platform$Cmd$none);
-				}),
-			view: view
-		},
-		_Utils_Tuple0);
-};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Page$unwrapMsg = function (_v0) {
-	var lazyPair = _v0.a;
-	return lazyPair(_Utils_Tuple0);
+var $harrysarson$elm_hacky_unique$Unique$UniqueImpl = function (a) {
+	return {$: 'UniqueImpl', a: a};
 };
-var $author$project$Page$empty = $author$project$Page$unwrapMsg(
-	$author$project$Page$sandbox(
-		{
-			init: _Utils_Tuple0,
-			update: F2(
-				function (_v0, _v1) {
-					return _Utils_Tuple0;
-				}),
-			view: function (_v2) {
-				return $elm$html$Html$text('');
-			}
-		})).a;
-var $author$project$Pages$Buttons$init = 0;
-var $author$project$Pages$Buttons$update = F2(
-	function (msg, model) {
-		if (msg.$ === 'Increment') {
-			return model + 1;
-		} else {
-			return model - 1;
-		}
+var $harrysarson$elm_hacky_unique$Unique$unique = function (_v0) {
+	return $harrysarson$elm_hacky_unique$Unique$UniqueImpl(0 / 0);
+};
+var $author$project$Page$empty = $author$project$Page$Model(
+	_Utils_Tuple3(
+		$harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0),
+		$elm$html$Html$text(''),
+		$elm$core$Platform$Sub$none));
+var $author$project$Page$mapInit = F3(
+	function (mapper, _v0, flag) {
+		var func = _v0.a;
+		return mapper(
+			func(flag));
 	});
-var $author$project$Pages$Buttons$Decrement = {$: 'Decrement'};
-var $author$project$Pages$Buttons$Increment = {$: 'Increment'};
-var $elm$html$Html$button = _VirtualDom_node('button');
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
-var $author$project$Pages$Buttons$view = function (model) {
-	return A2(
-		$elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Pages$Buttons$Decrement)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('-')
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(model))
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Pages$Buttons$Increment)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('+')
-					]))
-			]));
-};
-var $author$project$Pages$Buttons$initiate = $author$project$Page$sandbox(
-	{init: $author$project$Pages$Buttons$init, update: $author$project$Pages$Buttons$update, view: $author$project$Pages$Buttons$view});
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -6254,6 +6101,163 @@ var $elm$url$Url$Parser$parse = F2(
 					url.fragment,
 					$elm$core$Basics$identity)));
 	});
+var $author$project$Pages$Buttons$init = 0;
+var $author$project$Page$Program = function (a) {
+	return {$: 'Program', a: a};
+};
+var $author$project$Page$Updated = function (a) {
+	return {$: 'Updated', a: a};
+};
+var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
+var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
+var $elm$core$Platform$Sub$map = _Platform_map;
+var $author$project$Page$elementInner = function (_v0) {
+	var key = _v0.key;
+	var model = _v0.model;
+	var subscriptions = _v0.subscriptions;
+	var view = _v0.view;
+	var mapper = _v0.mapper;
+	var specializedMapper = mapper(model);
+	return $author$project$Page$Model(
+		_Utils_Tuple3(
+			key,
+			A2(
+				$elm$html$Html$map,
+				specializedMapper,
+				view(model)),
+			A2(
+				$elm$core$Platform$Sub$map,
+				specializedMapper,
+				subscriptions(model))));
+};
+var $elm$core$Platform$Cmd$map = _Platform_map;
+var $author$project$Page$element = function (record) {
+	return $author$project$Page$Program(
+		function (flag) {
+			var update_ = record.update;
+			var key = $harrysarson$elm_hacky_unique$Unique$unique(_Utils_Tuple0);
+			var _v0 = record;
+			var init = _v0.init;
+			var subscriptions = _v0.subscriptions;
+			var view = _v0.view;
+			var mapper = F2(
+				function (model, msg) {
+					var _v1 = A2(update_, msg, model);
+					var newModel = _v1.a;
+					var cmd = _v1.b;
+					return $author$project$Page$Updated(
+						function (_v2) {
+							return _Utils_Tuple2(
+								$author$project$Page$elementInner(
+									{key: key, mapper: mapper, model: newModel, subscriptions: subscriptions, view: view}),
+								A2(
+									$elm$core$Platform$Cmd$map,
+									mapper(newModel),
+									cmd));
+						});
+				});
+			var _v3 = init(flag);
+			var initialModel = _v3.a;
+			var initialCmd = _v3.b;
+			return _Utils_Tuple2(
+				$author$project$Page$elementInner(
+					{key: key, mapper: mapper, model: initialModel, subscriptions: subscriptions, view: view}),
+				A2(
+					$elm$core$Platform$Cmd$map,
+					mapper(initialModel),
+					initialCmd));
+		});
+};
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Page$sandbox = function (record) {
+	return $author$project$Page$element(
+		{
+			init: function (_v0) {
+				return _Utils_Tuple2(record.init, $elm$core$Platform$Cmd$none);
+			},
+			subscriptions: function (_v1) {
+				return $elm$core$Platform$Sub$none;
+			},
+			update: F2(
+				function (msg, model) {
+					return _Utils_Tuple2(
+						A2(record.update, msg, model),
+						$elm$core$Platform$Cmd$none);
+				}),
+			view: record.view
+		});
+};
+var $author$project$Pages$Buttons$update = F2(
+	function (msg, model) {
+		if (msg.$ === 'Increment') {
+			return model + 1;
+		} else {
+			return model - 1;
+		}
+	});
+var $author$project$Pages$Buttons$Decrement = {$: 'Decrement'};
+var $author$project$Pages$Buttons$Increment = {$: 'Increment'};
+var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $author$project$Pages$Buttons$view = function (model) {
+	return A2(
+		$elm$html$Html$div,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Pages$Buttons$Decrement)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('-')
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromInt(model))
+					])),
+				A2(
+				$elm$html$Html$button,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$Pages$Buttons$Increment)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('+')
+					]))
+			]));
+};
+var $author$project$Pages$Buttons$program = $author$project$Page$sandbox(
+	{init: $author$project$Pages$Buttons$init, update: $author$project$Pages$Buttons$update, view: $author$project$Pages$Buttons$view});
+var $author$project$SPA$PageUpdated = function (a) {
+	return {$: 'PageUpdated', a: a};
+};
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -6276,6 +6280,14 @@ var $elm$core$Dict$fromList = function (assocs) {
 		$elm$core$Dict$empty,
 		assocs);
 };
+var $elm$core$Tuple$mapSecond = F2(
+	function (func, _v0) {
+		var x = _v0.a;
+		var y = _v0.b;
+		return _Utils_Tuple2(
+			x,
+			func(y));
+	});
 var $author$project$Pages$Book$GotText = function (a) {
 	return {$: 'GotText', a: a};
 };
@@ -6590,7 +6602,7 @@ var $author$project$Pages$Book$view = function (model) {
 					]));
 	}
 };
-var $author$project$Pages$Book$initiate = $author$project$Page$element(
+var $author$project$Pages$Book$program = $author$project$Page$element(
 	{init: $author$project$Pages$Book$init, subscriptions: $author$project$Pages$Book$subscriptions, update: $author$project$Pages$Book$update, view: $author$project$Pages$Book$view});
 var $author$project$Pages$Forms$Model = F3(
 	function (name, password, passwordAgain) {
@@ -6719,7 +6731,7 @@ var $author$project$Pages$Forms$view = function (model) {
 				$author$project$Pages$Forms$viewValidation(model)
 			]));
 };
-var $author$project$Pages$Forms$initiate = $author$project$Page$sandbox(
+var $author$project$Pages$Forms$program = $author$project$Page$sandbox(
 	{init: $author$project$Pages$Forms$init, update: $author$project$Pages$Forms$update, view: $author$project$Pages$Forms$view});
 var $author$project$Pages$Numbers$Model = function (dieFace) {
 	return {dieFace: dieFace};
@@ -6928,7 +6940,7 @@ var $author$project$Pages$Numbers$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$Numbers$initiate = $author$project$Page$element(
+var $author$project$Pages$Numbers$program = $author$project$Page$element(
 	{init: $author$project$Pages$Numbers$init, subscriptions: $author$project$Pages$Numbers$subscriptions, update: $author$project$Pages$Numbers$update, view: $author$project$Pages$Numbers$view});
 var $author$project$Pages$Quotes$Loading = {$: 'Loading'};
 var $author$project$Pages$Quotes$GotQuote = function (a) {
@@ -7082,7 +7094,7 @@ var $author$project$Pages$Quotes$view = function (model) {
 				$author$project$Pages$Quotes$viewQuote(model)
 			]));
 };
-var $author$project$Pages$Quotes$initiate = $author$project$Page$element(
+var $author$project$Pages$Quotes$program = $author$project$Page$element(
 	{init: $author$project$Pages$Quotes$init, subscriptions: $author$project$Pages$Quotes$subscriptions, update: $author$project$Pages$Quotes$update, view: $author$project$Pages$Quotes$view});
 var $author$project$Pages$TextFields$init = {content: ''};
 var $author$project$Pages$TextFields$update = F2(
@@ -7121,7 +7133,7 @@ var $author$project$Pages$TextFields$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$TextFields$initiate = $author$project$Page$sandbox(
+var $author$project$Pages$TextFields$program = $author$project$Page$sandbox(
 	{init: $author$project$Pages$TextFields$init, update: $author$project$Pages$TextFields$update, view: $author$project$Pages$TextFields$view});
 var $author$project$Pages$Time$AdjustTimeZone = function (a) {
 	return {$: 'AdjustTimeZone', a: a};
@@ -7501,7 +7513,7 @@ var $author$project$Pages$Time$view = function (model) {
 				$elm$html$Html$text(hour + (':' + (minute + (':' + second))))
 			]));
 };
-var $author$project$Pages$Time$initiate = $author$project$Page$element(
+var $author$project$Pages$Time$program = $author$project$Page$element(
 	{init: $author$project$Pages$Time$init, subscriptions: $author$project$Pages$Time$subscriptions, update: $author$project$Pages$Time$update, view: $author$project$Pages$Time$view});
 var $author$project$Pages$WebSocket$init = function (flags) {
 	return _Utils_Tuple2(
@@ -7616,29 +7628,25 @@ var $author$project$Pages$WebSocket$view = function (model) {
 					]))
 			]));
 };
-var $author$project$Pages$WebSocket$initiate = $author$project$Page$element(
+var $author$project$Pages$WebSocket$program = $author$project$Page$element(
 	{init: $author$project$Pages$WebSocket$init, subscriptions: $author$project$Pages$WebSocket$subscriptions, update: $author$project$Pages$WebSocket$update, view: $author$project$Pages$WebSocket$view});
-var $author$project$SPA$pages = _List_fromArray(
-	[
-		_Utils_Tuple2('counter', $author$project$Pages$Buttons$initiate),
-		_Utils_Tuple2('reversing_text', $author$project$Pages$TextFields$initiate),
-		_Utils_Tuple2('form_control', $author$project$Pages$Forms$initiate),
-		_Utils_Tuple2(
-		'Book_through_Http',
-		$author$project$Pages$Book$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'Quotes_through_Json',
-		$author$project$Pages$Quotes$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'Random_dice',
-		$author$project$Pages$Numbers$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'What_time_is_it_now',
-		$author$project$Pages$Time$initiate(_Utils_Tuple0)),
-		_Utils_Tuple2(
-		'Web_socket',
-		$author$project$Pages$WebSocket$initiate(_Utils_Tuple0))
-	]);
+var $author$project$SPA$pages = A2(
+	$elm$core$List$map,
+	$elm$core$Tuple$mapSecond(
+		function (program) {
+			return A3($author$project$Page$mapInit, $author$project$SPA$PageInitialized, program, _Utils_Tuple0);
+		}),
+	_List_fromArray(
+		[
+			_Utils_Tuple2('counter', $author$project$Pages$Buttons$program),
+			_Utils_Tuple2('reversing_text', $author$project$Pages$TextFields$program),
+			_Utils_Tuple2('form_control', $author$project$Pages$Forms$program),
+			_Utils_Tuple2('Book_through_Http', $author$project$Pages$Book$program),
+			_Utils_Tuple2('Quotes_through_Json', $author$project$Pages$Quotes$program),
+			_Utils_Tuple2('Random_dice', $author$project$Pages$Numbers$program),
+			_Utils_Tuple2('What_time_is_it_now', $author$project$Pages$Time$program),
+			_Utils_Tuple2('Web_socket', $author$project$Pages$WebSocket$program)
+		]));
 var $author$project$SPA$pageDict = $elm$core$Dict$fromList($author$project$SPA$pages);
 var $elm$browser$Browser$Navigation$pushUrl = _Browser_pushUrl;
 var $elm$url$Url$addPort = F2(
@@ -7685,6 +7693,18 @@ var $elm$url$Url$toString = function (url) {
 					_Utils_ap(http, url.host)),
 				url.path)));
 };
+var $author$project$Page$update = F2(
+	function (_v0, oldPage) {
+		var lazyTriple = _v0.a;
+		var _v1 = oldPage.a;
+		var modelKey = _v1.a;
+		var _v2 = lazyTriple(_Utils_Tuple0);
+		var newPage = _v2.a;
+		var _v3 = newPage.a;
+		var msgKey = _v3.a;
+		var pageCmd = _v2.b;
+		return _Utils_eq(modelKey, msgKey) ? _Utils_Tuple2(newPage, pageCmd) : _Utils_Tuple2(oldPage, $elm$core$Platform$Cmd$none);
+	});
 var $elm$url$Url$Parser$Parser = function (a) {
 	return {$: 'Parser', a: a};
 };
@@ -7723,15 +7743,6 @@ var $elm$url$Url$Parser$custom = F2(
 	});
 var $elm$url$Url$Parser$string = A2($elm$url$Url$Parser$custom, 'STRING', $elm$core$Maybe$Just);
 var $author$project$SPA$urlParser = $elm$url$Url$Parser$string;
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$SPA$update = F2(
 	function (msg, model) {
 		update:
@@ -7755,31 +7766,51 @@ var $author$project$SPA$update = F2(
 					}
 				case 'UrlChanged':
 					var url = msg.a;
-					var newPageMsg = A2(
-						$elm$core$Maybe$withDefault,
-						$author$project$Pages$Buttons$initiate,
-						A2(
-							$elm$core$Maybe$andThen,
-							function (pageName) {
-								return A2($elm$core$Dict$get, pageName, $author$project$SPA$pageDict);
-							},
-							A2($elm$url$Url$Parser$parse, $author$project$SPA$urlParser, url)));
-					var $temp$msg = $author$project$SPA$PageUpdated(newPageMsg),
-						$temp$model = model;
-					msg = $temp$msg;
-					model = $temp$model;
-					continue update;
+					var mMsg = A2(
+						$elm$core$Maybe$andThen,
+						function (pageName) {
+							return A2($elm$core$Dict$get, pageName, $author$project$SPA$pageDict);
+						},
+						A2($elm$url$Url$Parser$parse, $author$project$SPA$urlParser, url));
+					if (mMsg.$ === 'Just') {
+						var newPageMsg = mMsg.a;
+						var $temp$msg = newPageMsg,
+							$temp$model = model;
+						msg = $temp$msg;
+						model = $temp$model;
+						continue update;
+					} else {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				case 'PageInitialized':
+					var _v3 = msg.a;
+					var p = _v3.a;
+					var pcmd = _v3.b;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{page: p}),
+						A2($elm$core$Platform$Cmd$map, $author$project$SPA$PageUpdated, pcmd));
 				default:
 					var pmsg = msg.a;
-					var _v2 = $author$project$Page$unwrapMsg(pmsg);
-					var p = _v2.a;
-					var pcmd = _v2.b;
+					var _v4 = A2($author$project$Page$update, pmsg, model.page);
+					var p = _v4.a;
+					var pcmd = _v4.b;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{page: p}),
 						A2($elm$core$Platform$Cmd$map, $author$project$SPA$PageUpdated, pcmd));
 			}
+		}
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
 		}
 	});
 var $author$project$SPA$init = F3(
@@ -7790,17 +7821,17 @@ var $author$project$SPA$init = F3(
 			A2($elm$url$Url$Parser$parse, $author$project$SPA$urlParser, url));
 		return A2(
 			$author$project$SPA$update,
-			$author$project$SPA$PageUpdated($author$project$Pages$Buttons$initiate),
+			A3($author$project$Page$mapInit, $author$project$SPA$PageInitialized, $author$project$Pages$Buttons$program, _Utils_Tuple0),
 			{key: key, page: $author$project$Page$empty, title: title});
 	});
-var $author$project$Page$subscribe = F2(
+var $author$project$Page$mapSubscriptions = F2(
 	function (mapper, _v0) {
 		var _v1 = _v0.a;
-		var sub = _v1.b;
+		var sub = _v1.c;
 		return A2($elm$core$Platform$Sub$map, mapper, sub);
 	});
 var $author$project$SPA$subscriptions = function (model) {
-	return A2($author$project$Page$subscribe, $author$project$SPA$PageUpdated, model.page);
+	return A2($author$project$Page$mapSubscriptions, $author$project$SPA$PageUpdated, model.page);
 };
 var $elm$html$Html$br = _VirtualDom_node('br');
 var $elm$core$List$intersperse = F2(
@@ -7824,8 +7855,8 @@ var $elm$core$List$intersperse = F2(
 var $author$project$Page$mapView = F2(
 	function (mapper, _v0) {
 		var _v1 = _v0.a;
-		var innerView = _v1.a;
-		return A2($elm$html$Html$map, mapper, innerView);
+		var view = _v1.b;
+		return A2($elm$html$Html$map, mapper, view);
 	});
 var $elm$html$Html$a = _VirtualDom_node('a');
 var $elm$html$Html$Attributes$href = function (url) {

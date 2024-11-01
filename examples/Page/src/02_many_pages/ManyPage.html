@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Many Pages</title>
-  <script type="text/javascript" src="elm.js"></script>
+  <script type="text/javascript" src="main.js"></script>
 </head>
 
 <body>
@@ -24,6 +24,7 @@ var socket = new WebSocket('wss://echo.websocket.org');
 // When a command goes to the `sendMessage` port, we pass the message
 // along to the WebSocket.
 app.ports.sendMessage.subscribe(function(message) {
+		console.log(message);
     socket.send(message);
 });
 

@@ -1,11 +1,10 @@
 module Emitter exposing
-    ( Emitter, Msg
-    , element
-    , subscribe, mapView, unwrapMsg
-    , empty
+    ( Model, Msg, Program
+    , empty, element
+    , mapInit, mapSubscriptions, mapView, update
     )
 
-{-| This module allows you to create a page module or UI component that can emit `Msg` to your app. If you haven't checked out the `Page` module in this package yet, it's recommended to start with `Page`, then move on to this module later. Some boilerplate code is required.
+{-| This module allows you to create a page module or UI component that can emit `Msg` to your app. If you haven't checked the `Page` module in this package yet, it's recommended to start with `Page`, then move on to this module later. Some boilerplate code is required.
 
 
 # Terminology
@@ -13,22 +12,22 @@ module Emitter exposing
 To simplify the explanations throughout this document, let's introduce some terminology:
 
   - `InnerMsg`
-      - The message type you define for use within the `Emitter`.
+      - The message type you define for use within the `Emitter.Program`.
   - `AppMsg`
-      - The message type used by your application, which incorporates `Emitter AppMsg` as a component.
+      - The message type used by your application, which incorporates `Emitter.Program AppMsg` as a component.
   - `EmittedValue`
       - A type that the component emits.
-      - You will need to convert these values into `AppMsg` within the main app's code.
+      - You will need to convert these values into `AppMsg` within _the main app's code_.
 
 
 # Example Code
 
 Here’s an example of how to define your user form component:
 
-    module UserForm exposing (User, initiate)
+    module UserForm exposing (User, program)
 
     import Browser.Dom
-    import Emitter exposing (Emitter)
+    import Emitter
     import Html as H exposing (Html)
     import Html.Attributes as HA
     import Html.Events as HE
@@ -63,13 +62,14 @@ Here’s an example of how to define your user form component:
 
     cmdEmission : User -> Cmd Msg
     cmdEmission user =
-    -- This is the first piece of boilerplate code.
+        -- This is the first piece of boilerplate code.
         Task.perform Emit (Task.succeed user)
 
     update : Msg -> Model -> ( Model, Cmd Msg )
     update msg model =
         case msg of
-            NoOp -> ( model, Cmd.none )
+            NoOp ->
+                ( model, Cmd.none )
 
             UserInputName name ->
                 ( { model | nameInput = name }, Cmd.none )
@@ -79,18 +79,21 @@ Here’s an example of how to define your user form component:
 
             SubmitButtonClicked ->
                 let
-                    newModel = { model | tried = True }
+                    newModel =
+                        { model | tried = True }
                 in
                 if model.nameInput /= "" then
                     case String.toInt model.ageInput of
                         Just age ->
                             if 0 <= age && age <= 150 then
                                 ( newModel, cmdEmission (User model.nameInput age) )
+
                             else
                                 ( newModel, Browser.Dom.focus "ageInputField" |> Task.attempt (\_ -> NoOp) )
 
                         Nothing ->
                             ( newModel, Browser.Dom.focus "ageInputField" |> Task.attempt (\_ -> NoOp) )
+
                 else
                     ( newModel, Browser.Dom.focus "nameInputField" |> Task.attempt (\_ -> NoOp) )
 
@@ -105,6 +108,7 @@ Here’s an example of how to define your user form component:
         H.div []
             [ if model.tried && model.nameInput == "" then
                 H.span [ HA.style "color" "red" ] [ H.text "Your name must not be empty." ]
+
               else
                 H.text ""
             , H.br [] []
@@ -120,16 +124,22 @@ Here’s an example of how to define your user form component:
             , H.span [ HA.style "color" "red" ]
                 [ if not model.tried then
                     H.text ""
+
                   else if model.ageInput == "" then
                     H.text "Your age must not be empty."
+
                   else
                     case String.toInt model.ageInput of
-                        Nothing -> H.text "Please input a valid integer."
+                        Nothing ->
+                            H.text "Please input a valid integer."
+
                         Just age ->
                             if age < 0 then
                                 H.text "Please come back after you are born."
+
                             else if age > 150 then
                                 H.text "You should contact Guinness World Records about your longevity."
+
                             else
                                 H.text ""
                 ]
@@ -146,14 +156,16 @@ Here’s an example of how to define your user form component:
             , H.button [ HE.onClick SubmitButtonClicked ] [ H.text "Submit" ]
             ]
 
-    initiate : (User -> appMsg) -> () -> Emitter.Msg appMsg
-    initiate =
+    program : (User -> appMsg) -> Emitter.Program () appMsg
+    program =
         Emitter.element
             (\msg ->
                 case msg of
-                    Emit user -> Just user
+                    Emit user ->
+                        Just user
 
-                    _ -> Nothing
+                    _ ->
+                        Nothing
             )
             { init = init
             , subscriptions = \_ -> Sub.none
@@ -166,99 +178,131 @@ The module you defined can be used as follows:
     module Main exposing (..)
 
     import Browser
-    import Emitter exposing (Emitter)
+    import Emitter
     import Html as H exposing (Html)
     import Html.Attributes as HA
+    import Html.Events
     import UserForm exposing (User)
 
     type alias Model =
-        { userForm : Emitter Msg
+        { userForm : Emitter.Model Msg
         , user : Maybe User
         }
 
     init : () -> ( Model, Cmd Msg )
     init _ =
-        let
-            emitterMsg =
-                UserForm.initiate UserSubmitted ()
-
-            ( emt, _, _ ) =
-                Emitter.unwrapMsg emitterMsg
-        in
-        update (FormUpdated emitterMsg) { userForm = emt, user = Nothing }
+        update
+            (Emitter.mapInit FormInitialized
+                (UserForm.program UserSubmitted)
+                ()
+            )
+            { userForm = Emitter.empty, user = Nothing }
 
     type Msg
-        = FormUpdated (Emitter.Msg Msg)
+        = FormInitialized ( Emitter.Model Msg, Cmd (Emitter.Msg Msg), Cmd Msg )
+        | GotFormMsg (Emitter.Msg Msg)
         | UserSubmitted User
 
     subscriptions : Model -> Sub Msg
     subscriptions model =
-        Emitter.subscribe FormUpdated model.userForm
+        Emitter.mapSubscriptions GotFormMsg model.userForm
 
     update : Msg -> Model -> ( Model, Cmd Msg )
     update msg model =
         case msg of
-            FormUpdated emitterMsg ->
+            FormInitialized ( emt, cmdInner, cmdMsg ) ->
+                ( { model | userForm = emt }
+                , Cmd.batch
+                    [ Cmd.map GotFormMsg cmdInner
+                    , cmdMsg
+                    ]
+                )
+
+            GotFormMsg m ->
                 let
                     ( emt, cmdInner, cmdMsg ) =
-                        Emitter.unwrapMsg emitterMsg
+                        Emitter.update m model.userForm
                 in
-                ( { model | userForm = emt }, Cmd.batch [ Cmd.map FormUpdated cmdInner, cmdMsg ] )
+                ( { model | userForm = emt }
+                , Cmd.batch
+                    [ Cmd.map GotFormMsg cmdInner
+                    , cmdMsg
+                    ]
+                )
 
-            UserSubmitted user ->
-                ( { model | user = Just user }, Cmd.none )
+            UserSubmitted u ->
+                ( { model | user = Just u }, Cmd.none )
 
     view : Model -> Html Msg
     view model =
         H.div []
-            [ H.div [ HA.style "border" "ridge 3px pink" ] [ Emitter.mapView FormUpdated model.userForm ]
+            [ H.div [ HA.style "border" "ridge 3px pink" ]
+                [ Emitter.mapView GotFormMsg model.userForm ]
             , case model.user of
                 Nothing ->
                     H.text ""
 
                 Just user ->
-                    H.text ("Hello, " ++ user.name ++ "!")
+                    H.text <|
+                        "Hello, "
+                            ++ user.name
+                            ++ "!"
             ]
 
     main : Program () Model Msg
     main =
-        Browser.element { init = init, subscriptions = subscriptions, update = update, view = view }
+        Browser.element
+            { init = init
+            , subscriptions = subscriptions
+            , update = update
+            , view = view
+            }
+
+If you want to try moving this code, `git clone` the corresponding repo.
 
 
 # Types
 
-@docs Emitter, Msg
+@docs Model, Msg, Program
 
 
 # Creation
 
-
-@docs empty,element
+@docs empty, element
 
 
 # Usage
 
-@docs subscribe, mapView, unwrapMsg
-
-
+@docs mapInit, mapSubscriptions, mapView, update
 
 -}
 
 import Html exposing (Html)
 import Maybe.Extra
 import Task
+import Unique exposing (Unique)
 
 
 {-| A custom type that represents a UI module that can emit `AppMsg`. No type variables for its inner state or `InnerMsg` are needed.
 -}
-type Emitter appMsg
-    = Emitter ( Html (Msg appMsg), Sub (Msg appMsg) )
+type Model appMsg
+    = Model
+        { key : Unique
+        , html : Html (Msg appMsg)
+        , sub : Sub (Msg appMsg)
+        }
 
 
-{-| This `Emitter.Msg` value is used to pass through your `Emitter` and the entire application. See the example above for more details.
+{-| This `Emitter.Msg` value is used both to update the emitter state and to emit some value for the entire application. See the example above for more details.
 -}
 type Msg appMsg
-    = Updated (() -> ( Emitter appMsg, Cmd (Msg appMsg), Maybe appMsg ))
+    = Updated (() -> ( Model appMsg, Cmd (Msg appMsg), Maybe appMsg ))
+
+
+{-| A custom type representing the main program of your component module. This type of values can be passed to `Emitter.mapInit` with flag.
+-}
+type Program flag appMsg
+    = Program (flag -> ( Model appMsg, Cmd (Msg appMsg), Cmd appMsg ))
 
 
 {-| Similar to `Page.element`, but with two additional arguments:
@@ -271,108 +315,142 @@ type Msg appMsg
       - Typically, the first and second arguments are defined in the component module, while the third and fourth arguments are defined in the main app module.
 
 Be sure to check the example code in the [GitHub repository](https://github.com/kudzu-forest/elm-page).
+
 -}
 element :
     (msg -> Maybe emitted)
-    -> 
+    ->
         { init : flag -> ( model, Cmd msg )
         , subscriptions : model -> Sub msg
         , update : msg -> model -> ( model, Cmd msg )
         , view : model -> Html msg
         }
     -> (emitted -> appMsg)
-    -> flag
-    -> Msg appMsg
-element router_ { init, subscriptions, update, view } toAppMsg flag =
+    -> Program flag appMsg
+element router_ rec toAppMsg =
     let
-        router : msg -> Maybe appMsg
-        router =
-            router_ >> Maybe.map toAppMsg
+        { init, subscriptions, view } =
+            rec
 
-        mapper : model -> msg -> Msg appMsg
-        mapper model innerMsg =
+        update_ =
+            rec.update
+    in
+    Program <|
+        \flag ->
             let
-                ( newModel, cmd ) = update innerMsg model
-                mMsg = router innerMsg
-            in
-            Updated
-                (\() ->
-                    ( elementInner
-                        { router = router
+                key : Unique
+                key =
+                    Unique.unique ()
+
+                router : msg -> Maybe appMsg
+                router =
+                    router_ >> Maybe.map toAppMsg
+
+                mapper : model -> msg -> Msg appMsg
+                mapper model innerMsg =
+                    let
+                        ( newModel, cmd ) =
+                            update_ innerMsg model
+
+                        mMsg =
+                            router innerMsg
+                    in
+                    Updated
+                        (\() ->
+                            ( elementInner
+                                { key = key
+                                , mapper = mapper
+                                , model = newModel
+                                , subscriptions = subscriptions
+                                , view = view
+                                }
+                            , if Maybe.Extra.isJust mMsg then
+                                Cmd.none
+                                -- Preventing infinite loops.
+
+                              else
+                                Cmd.map (mapper newModel) cmd
+                            , mMsg
+                            )
+                        )
+
+                ( initialModel, initialCmd ) =
+                    init flag
+
+                model_ =
+                    elementInner
+                        { key = key
                         , mapper = mapper
-                        , model = newModel
+                        , model = initialModel
                         , subscriptions = subscriptions
-                        , update = update
                         , view = view
                         }
-                    , if Maybe.Extra.isJust mMsg then
-                        Cmd.none
-                        -- Preventing infinite loops.
-                      else
-                        Cmd.map (mapper newModel) cmd
-                    , mMsg
-                    )
+            in
+            update
+                (Updated <|
+                    \() ->
+                        ( model_
+                        , Cmd.map (mapper initialModel) initialCmd
+                        , Nothing
+                        )
                 )
-
-        ( initialModel, initialCmd ) = init flag
-    in
-    Updated <|
-        \() ->
-            ( elementInner
-                { router = router
-                , mapper = mapper
-                , model = initialModel
-                , subscriptions = subscriptions
-                , update = update
-                , view = view
-                }
-            , Cmd.map (mapper initialModel) initialCmd
-            , Nothing
-            )
+                model_
 
 
 elementInner :
-    { router : msg -> Maybe appMsg
+    { key : Unique
     , mapper : model -> msg -> Msg appMsg
     , model : model
     , subscriptions : model -> Sub msg
-    , update : msg -> model -> ( model, Cmd msg )
     , view : model -> Html msg
     }
-    -> Emitter appMsg
-elementInner { router, mapper, model, subscriptions, update, view } =
+    -> Model appMsg
+elementInner { key, mapper, model, subscriptions, view } =
     let
-        specializedMapper = mapper model
+        specializedMapper =
+            mapper model
     in
-    Emitter
-        ( Html.map specializedMapper (view model)
-        , Sub.map specializedMapper (subscriptions model)
-        )
+    Model
+        { key = key
+        , html = Html.map specializedMapper (view model)
+        , sub = Sub.map specializedMapper (subscriptions model)
+        }
 
 
-{-| Similar to `Page.subscribe`, this function maps over the subscriptions of the `Emitter`.
+{-| Similar to `Page.mapInit`, but the returned tuple is a triple.
 -}
-subscribe : (Msg appMsg -> appMsg) -> Emitter appMsg -> Sub appMsg
-subscribe mapper (Emitter ( _, sub )) =
+mapInit : (( Model appMsg, Cmd (Msg appMsg), Cmd appMsg ) -> appMsg) -> Program flag appMsg -> flag -> appMsg
+mapInit emitterInitialized (Program func) flag =
+    emitterInitialized <| func flag
+
+
+{-| Similar to `Page.mapSubscriptions`, this function maps over the subscriptions of the `Emitter.Program`.
+-}
+mapSubscriptions : (Msg appMsg -> appMsg) -> Model appMsg -> Sub appMsg
+mapSubscriptions mapper (Model { sub }) =
     Sub.map mapper sub
 
 
-{-| Similar to `Page.mapView`, this function maps over the view of the `Emitter`.
+{-| Similar to `Page.mapView`, this function maps over the view of the `Emitter.Program`.
 -}
 mapView :
     (Msg appMsg -> appMsg)
-    -> Emitter appMsg
+    -> Model appMsg
     -> Html appMsg
-mapView mapper (Emitter ( innerView, _ )) =
-    Html.map mapper innerView
+mapView mapper (Model { html }) =
+    Html.map mapper html
 
 
-{-| Similar to `Page.unwrapMsg`, but the returned tuple includes, as its third component, a `Cmd msg` that inserts the emitted `AppMsg` into the main loop of the application.
+{-| Similar to `Page.updated`, but the returned tuple includes, as its third component, a `Cmd msg` that inserts the emitted `AppMsg` into the main loop of the application.
 -}
-unwrapMsg : Msg appMsg -> ( Emitter appMsg, Cmd (Msg appMsg), Cmd appMsg )
-unwrapMsg (Updated lazy) =
+update : Msg appMsg -> Model appMsg -> ( Model appMsg, Cmd (Msg appMsg), Cmd appMsg )
+update (Updated lazy) ((Model { key }) as oldModel) =
     let
-        ( updated, innerCmd, maybeAppMsg ) = lazy ()
+        ( (Model rec) as updated, innerCmd, maybeAppMsg ) =
+            lazy ()
+
+        newKey =
+            rec.key
 
         emittedCmd =
             case maybeAppMsg of
@@ -382,21 +460,19 @@ unwrapMsg (Updated lazy) =
                 Just msg ->
                     Task.perform identity (Task.succeed msg)
     in
-    ( updated, innerCmd, emittedCmd )
+    if newKey == key then
+        ( updated, innerCmd, emittedCmd )
+
+    else
+        ( oldModel, Cmd.none, emittedCmd )
 
 
-{-| Similar to `Page.empty`, but requires two dummy values to pass type checking.
+{-| Similar to `Page.empty`.
 -}
-empty : (a -> appMsg) -> b -> Emitter appMsg
-empty toAppMsg flag =
-    element
-        (\_ -> Nothing)
-        { init = \_ -> ( (), Cmd.none )
-        , subscriptions = \_ -> Sub.none
-        , update = \_ _ -> ( (), Cmd.none )
-        , view = \_ -> Html.text ""
+empty : Model appMsg
+empty =
+    Model
+        { key = Unique.unique ()
+        , html = Html.text ""
+        , sub = Sub.none
         }
-        toAppMsg
-        flag
-        |> unwrapMsg
-        |> (\( e, _, _ ) -> e)

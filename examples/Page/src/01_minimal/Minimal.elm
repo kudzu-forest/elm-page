@@ -3,43 +3,65 @@ module Minimal exposing (..)
 import Browser
 import Html as H exposing (Html)
 import Html.Events as HE
-import Page exposing (Page)
+import Page
 
 
 type alias Model =
-    { page : Page
+    { page : Page.Model
     }
 
 
 type Msg
-    = PageUpdated Page.Msg
+    = PageInitialized ( Page.Model, Cmd Page.Msg )
+    | GotPageMsg Page.Msg
+
+
+init : () -> ( Model, Cmd Msg )
+init () =
+    update
+        (Page.mapInit PageInitialized page ())
+        (Model Page.empty)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        PageUpdated pmsg ->
+        PageInitialized ( newPage, pageCmd ) ->
+            ( { page = newPage }
+            , Cmd.map GotPageMsg pageCmd
+            )
+
+        GotPageMsg pmsg ->
             let
-                ( newPage, pcmd ) =
-                    Page.unwrapMsg pmsg
+                ( newPage, pageCmd ) =
+                    Page.update pmsg model.page
             in
             ( { page = newPage }
-            , Cmd.map PageUpdated pcmd
+            , Cmd.map GotPageMsg pageCmd
             )
+
+
+view : Model -> Html Msg
+view model =
+    Page.mapView GotPageMsg model.page
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Page.mapSubscriptions GotPageMsg model.page
 
 
 main : Program () Model Msg
 main =
     Browser.element
-        { init =
-            \_ -> update (PageUpdated page) (Model Page.empty)
-        , subscriptions = \_ -> Sub.none
+        { init = init
+        , subscriptions = subscriptions
         , update = update
         , view = view
         }
 
 
-page : Page.Msg
+page : Page.Program ()
 page =
     Page.sandbox
         { init = 0
@@ -52,8 +74,3 @@ page =
                     , H.text <| String.fromInt model
                     ]
         }
-
-
-view : Model -> Html Msg
-view model =
-    Page.mapView PageUpdated model.page

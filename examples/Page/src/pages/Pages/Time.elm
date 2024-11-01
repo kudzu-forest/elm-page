@@ -19,7 +19,7 @@ import Time
 -- MAIN
 
 
-initiate =
+program =
     Page.element
         { init = init
         , view = view
